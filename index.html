@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="dashboardApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unified Complaint Management</title>
+    
+    <!-- AngularJS 1.8.3 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+    
+    <!-- Highcharts (primary from jsDelivr to avoid rate limits) -->
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/highcharts.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/heatmap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/highcharts-more.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/wordcloud.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/map.min.js"></script>
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body ng-controller="DashboardController" ng-click="closeAllMenus($event)">
+    <!-- Fixed Header -->
+    <div class="dashboard-header">
+        <div class="header-row header-top" ng-click="$event.stopPropagation()">
+            <button class="hamburger-button" title="Menu" aria-label="Open menu" ng-click="toggleSidebar()">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <rect x="0.75" y="0.75" width="22.5" height="22.5" rx="6" stroke="#337ab7" stroke-width="2"/>
+                    <path d="M7 9h10M7 12h10M7 15h10" stroke="#337ab7" stroke-width="2.2" stroke-linecap="round"/>
+                </svg>
+            </button>
+            <div class="header-title">Unified Complaint Management</div>
+            <div class="header-spacer"></div>
+            <div class="account-area">
+                <span class="account-label">Account</span>
+                <select class="account-select" ng-model="selectedAccount">
+                    <option selected>Lankesh</option>
+                </select>
+            </div>
+            <div class="header-logo" title="Unified Dashboard" aria-label="Unified Dashboard">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 12a9 9 0 1118 0 9 9 0 01-18 0zm4-1h10v2H7v-2zm2-4h6v2H9V7zm0 8h6v2H9v-2z" fill="#337ab7"/>
+                </svg>
+            </div>
+        </div>
+        <div class="header-row header-filters" ng-click="$event.stopPropagation()">
+            <div class="filters-applied" aria-label="Applied filters">
+                <span class="filters-label">Filters:</span>
+                <div class="filter-badges">
+                    <span class="filter-badge"><span class="badge-key">Sources:</span> Social, Survey</span>
+                    <span class="filter-badge"><span class="badge-key">Sentiment:</span> All</span>
+                    <span class="filter-badge"><span class="badge-key">Countries:</span> All</span>
+                </div>
+            </div>
+            <button class="filter-fab" title="Open filters" aria-label="Open filters" ng-click="openFilters()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6L15 12v6a1 1 0 0 1-.553.894l-4 2A1 1 0 0 1 9 20v-8L3.2 6.6A1 1 0 0 1 3 5z" fill="white"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="tab-container">
+        <div class="tabs">
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'overview'}" 
+                    ng-click="setActiveTab('overview')"
+                    data-color="blue">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 19h16M6 16v-7m4 7V7m4 9V9m4 7v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                Complaint Overview
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'source'}" 
+                    ng-click="setActiveTab('source')"
+                    data-color="green">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 6h6v6H4V6zm10 0h6v6h-6V6zM4 16h6v4H4v-4zm10 0h6v4h-6v-4z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </span>
+                Source & Channel Analytics
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'category'}" 
+                    ng-click="setActiveTab('category')"
+                    data-color="orange">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M3 11l9-7 9 7-9 7-9-7zM12 18l9-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                Category & Location Analytics
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'resolution'}" 
+                    ng-click="setActiveTab('resolution')"
+                    data-color="red">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </span>
+                Resolution & Performance
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'sentiment'}" 
+                    ng-click="setActiveTab('sentiment')"
+                    data-color="purple">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 21s-6-3.35-9-7.5C1 10 3 6 6.5 6 8.76 6 10 7.5 12 9.5 14 7.5 15.24 6 17.5 6 21 6 23 10 21 13.5 18 17.65 12 21 12 21z" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                </span>
+                Sentiment & Feedback
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'timeline'}" 
+                    ng-click="setActiveTab('timeline')"
+                    data-color="cyan">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                Timeline & Insights
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'ai'}" 
+                    ng-click="setActiveTab('ai')"
+                    data-color="amber">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 8h8v8H8V8zM3 12h2m14 0h2M12 3v2m0 14v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                AI & Smart Insights
+            </button>
+        </div>
+    </div>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <div ng-switch="activeTab">
+        <!-- Section: Complaint Overview -->
+        <div ng-switch-when="overview" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 19h16M6 16v-7m4 7V7m4 9V9m4 7v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </span>Complaint Overview</h2>
+            <div class="section-subtitle">High-level trends, volumes, and status distribution across all complaints.</div>
+            <div class="kpi-grid">
+                <div class="kpi-card kpi-total">
+                    <div class="kpi-card-header">
+                        <div class="kpi-title-wrap">
+                            <div class="kpi-title">Total Tickets</div>
+                            <button class="kpi-info" title="Total number of complaints in the selected period">i</button>
+                        </div>
+                        <div class="kpi-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 19h16M6 16v-7m4 7V7m4 9V9m4 7v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">{{kpiData.total.value}}</div>
+                    <div class="kpi-delta negative">-5.6% from previous month</div>
+                </div>
+                <div class="kpi-card kpi-open">
+                    <div class="kpi-card-header">
+                        <div class="kpi-title-wrap">
+                            <div class="kpi-title">Open Tickets</div>
+                            <button class="kpi-info" title="Currently open complaints">i</button>
+                        </div>
+                        <div class="kpi-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">{{kpiData.open.value}}</div>
+                    <div class="kpi-delta positive">+2.3% from previous month</div>
+                </div>
+                <div class="kpi-card kpi-inprogress">
+                    <div class="kpi-card-header">
+                        <div class="kpi-title-wrap">
+                            <div class="kpi-title">In Progress Tickets</div>
+                            <button class="kpi-info" title="Complaints currently being worked on">i</button>
+                        </div>
+                        <div class="kpi-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">{{kpiData.inProgress.value}}</div>
+                    <div class="kpi-delta negative">-1.1% from previous month</div>
+                </div>
+                <div class="kpi-card kpi-resolved">
+                    <div class="kpi-card-header">
+                        <div class="kpi-title-wrap">
+                            <div class="kpi-title">Resolved Tickets</div>
+                            <button class="kpi-info" title="Complaints resolved in the selected period">i</button>
+                        </div>
+                        <div class="kpi-icon" aria-hidden="true">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 12l4 4 8-8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="kpi-value">{{kpiData.resolved.value}}</div>
+                    <div class="kpi-delta positive">+4.9% from previous month</div>
+                </div>
+            </div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Trend Over Time</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('trend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.trend}">
+                                <div class="menu-item" ng-click="downloadChart('trend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('trend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="trendChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Channel-wise Distribution</h3>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': channelChartType === 'bar'}" ng-click="switchChannelChart('bar')">Bar Chart</button>
+                            <button ng-class="{'active': channelChartType === 'pie'}" ng-click="switchChannelChart('pie')">Pie Chart</button>
+                            </div>
+                            </div>
+                            <div class="chart-menu" ng-click="$event.stopPropagation()">
+                                <button class="menu-button" ng-click="toggleChartMenu('channel')">⋯</button>
+                                <div class="menu-dropdown" ng-class="{'show': chartMenus.channel}">
+                                    <div class="menu-item" ng-click="downloadChart('channel', 'png')">Download PNG</div>
+                                    <div class="menu-item" ng-click="downloadChart('channel', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="channelChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Status Breakdown</h3>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': statusBreakdownType === 'bar'}" ng-click="switchStatusBreakdown('bar')">Bar Chart</button>
+                            <button ng-class="{'active': statusBreakdownType === 'pie'}" ng-click="switchStatusBreakdown('pie')">Pie Chart</button>
+                            </div>
+                        </div>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('statusBreakdown')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.statusBreakdown}">
+                                <div class="menu-item" ng-click="downloadChart('statusBreakdown', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('statusBreakdown', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="statusBreakdownChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Priority Split</h3>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': prioritySplitType === 'donut'}" ng-click="switchPrioritySplit('donut')">Donut Chart</button>
+                            <button ng-class="{'active': prioritySplitType === 'bar'}" ng-click="switchPrioritySplit('bar')">Bar Chart</button>
+                            </div>
+                        </div>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('prioritySplit')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.prioritySplit}">
+                                <div class="menu-item" ng-click="downloadChart('prioritySplit', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('prioritySplit', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="prioritySplitChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Complaint Categories</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('topCategories')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.topCategories}">
+                                <div class="menu-item" ng-click="downloadChart('topCategories', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('topCategories', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="topCategoriesChartConfig"></div>
+                </div>
+                
+                <div class="chart-card" style="grid-column: 1 / -1;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Volume by Day & Hour</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('dayHourHeatmap')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.dayHourHeatmap}">
+                                <div class="menu-item" ng-click="downloadChart('dayHourHeatmap', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('dayHourHeatmap', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container large" hc-chart="dayHourHeatmapConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Monthly Complaint Growth Rate</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('monthlyGrowth')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.monthlyGrowth}">
+                                <div class="menu-item" ng-click="downloadChart('monthlyGrowth', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('monthlyGrowth', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="monthlyGrowthChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaints per 1,000 Interactions</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('perThousand')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.perThousand}">
+                                <div class="menu-item" ng-click="downloadChart('perThousand', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('perThousand', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="perThousandChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: Source & Channel Analytics -->
+        <div ng-switch-when="source" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 6h6v6H4V6zm10 0h6v6h-6V6zM4 16h6v4H4v-4zm10 0h6v4h-6v-4z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </span>Source & Channel Analytics</h2>
+            <div class="section-subtitle">Understand where complaints originate and how sub-channels perform.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Source vs Status</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sourceStatus')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceStatus}">
+                                <div class="menu-item" ng-click="downloadChart('sourceStatus', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sourceStatus', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sourceStatusChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Source vs Priority</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sourcePriority')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sourcePriority}">
+                                <div class="menu-item" ng-click="downloadChart('sourcePriority', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sourcePriority', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sourcePriorityChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Source vs Resolution Time</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sourceResTime')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceResTime}">
+                                <div class="menu-item" ng-click="downloadChart('sourceResTime', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sourceResTime', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sourceResTimeChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Trend by Source</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sourceTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceTrend}">
+                                <div class="menu-item" ng-click="downloadChart('sourceTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sourceTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sourceTrendChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Source Share (%)</h3>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': sourceShareType === 'pie'}" ng-click="switchSourceShare('pie')">Pie Chart</button>
+                            <button ng-class="{'active': sourceShareType === 'bar'}" ng-click="switchSourceShare('bar')">Bar Chart</button>
+                            </div>
+                        </div>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sourceShare')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceShare}">
+                                <div class="menu-item" ng-click="downloadChart('sourceShare', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sourceShare', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sourceShareChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Social Media Sub-Channel Breakdown</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('socialSub')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.socialSub}">
+                                <div class="menu-item" ng-click="downloadChart('socialSub', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('socialSub', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="socialSubChannelsChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Review Channel Breakdown</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('reviewBreakdown')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewBreakdown}">
+                                <div class="menu-item" ng-click="downloadChart('reviewBreakdown', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('reviewBreakdown', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="reviewBreakdownChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Social Channel vs Sentiment</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('socialSentiment')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.socialSentiment}">
+                                <div class="menu-item" ng-click="downloadChart('socialSentiment', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('socialSentiment', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="socialSentimentStackedChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaints per Channel Type Over Time</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('channelTypeTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.channelTypeTrend}">
+                                <div class="menu-item" ng-click="downloadChart('channelTypeTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('channelTypeTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="channelTypeOverTimeChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sub-Channel Resolution Time Comparison</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('subChannelResTime')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.subChannelResTime}">
+                                <div class="menu-item" ng-click="downloadChart('subChannelResTime', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('subChannelResTime', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="subChannelResTimeComparisonChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: Category & Location Analytics -->
+        <div ng-switch-when="category" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 11l9-7 9 7-9 7-9-7zM12 18l9-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </span>Category & Location Analytics</h2>
+            <div class="section-subtitle">Identify dominant complaint types and where they occur most.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Categories</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('topCategories')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.topCategories}">
+                                <div class="menu-item" ng-click="downloadChart('topCategories', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('topCategories', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="topCategoriesChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Category vs Status</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('categoryStatus')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryStatus}">
+                                <div class="menu-item" ng-click="downloadChart('categoryStatus', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('categoryStatus', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="categoryStatusChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top 10 Locations</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('topLocations')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.topLocations}">
+                                <div class="menu-item" ng-click="downloadChart('topLocations', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('topLocations', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="topLocationsChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Location vs Category Heatmap</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('locationCategory')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.locationCategory}">
+                                <div class="menu-item" ng-click="downloadChart('locationCategory', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('locationCategory', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="locationCategoryChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Density Map (Placeholder)</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="sriLankaMapChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Location Trend (MoM Change)</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('locationTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.locationTrend}">
+                                <div class="menu-item" ng-click="downloadChart('locationTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('locationTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="locationTrendMoMChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Category Trend Over Time</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('categoryTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryTrend}">
+                                <div class="menu-item" ng-click="downloadChart('categoryTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('categoryTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="categoryTrendOverTimeChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: Resolution & Performance -->
+        <div ng-switch-when="resolution" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </span>Resolution & Performance</h2>
+            <div class="section-subtitle">Measure internal efficiency, SLA adherence, and team outcomes.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Avg Resolution Time</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('avgResTime')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.avgResTime}">
+                                <div class="menu-item" ng-click="downloadChart('avgResTime', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('avgResTime', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="avgResTimeChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Age Distribution</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('ageDist')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.ageDist}">
+                                <div class="menu-item" ng-click="downloadChart('ageDist', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('ageDist', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="ageDistChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">SLA Compliance Rate</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('slaCompliance')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.slaCompliance}">
+                                <div class="menu-item" ng-click="downloadChart('slaCompliance', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('slaCompliance', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="slaComplianceChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Employee Performance</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('employeePerf')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.employeePerf}">
+                                <div class="menu-item" ng-click="downloadChart('employeePerf', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('employeePerf', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="employeePerfChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Avg Time per Complaint (Employees)</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('employeeAvgTime')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.employeeAvgTime}">
+                                <div class="menu-item" ng-click="downloadChart('employeeAvgTime', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('employeeAvgTime', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="employeeAvgTimePerComplaintChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Funnel</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('funnel')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.funnel}">
+                                <div class="menu-item" ng-click="downloadChart('funnel', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('funnel', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container large" hc-chart="funnelChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Reopened / Escalated Complaints Trend</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('reopenedTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.reopenedTrend}">
+                                <div class="menu-item" ng-click="downloadChart('reopenedTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('reopenedTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="reopenedTrendChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Avg Time to First Response</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('ttfResponse')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.ttfResponse}">
+                                <div class="menu-item" ng-click="downloadChart('ttfResponse', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('ttfResponse', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="timeToFirstResponseChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Resolution Time Distribution</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('resTimeDist')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.resTimeDist}">
+                                <div class="menu-item" ng-click="downloadChart('resTimeDist', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('resTimeDist', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="resolutionTimeDistributionChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">SLA Breach Reasons</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('slaBreach')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.slaBreach}">
+                                <div class="menu-item" ng-click="downloadChart('slaBreach', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('slaBreach', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="slaBreachReasonsChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: Sentiment & Feedback -->
+        <div ng-switch-when="sentiment" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 21s-6-3.35-9-7.5C1 10 3 6 6.5 6 8.76 6 10 7.5 12 9.5 14 7.5 15.24 6 17.5 6 21 6 23 10 21 13.5 18 17.65 12 21 12 21z" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            </span>Sentiment & Feedback</h2>
+            <div class="section-subtitle">Analyze tone, emotions, and themes in customer feedback.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sentiment Breakdown</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sentimentBreakdown')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sentimentBreakdown}">
+                                <div class="menu-item" ng-click="downloadChart('sentimentBreakdown', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sentimentBreakdown', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sentimentBreakdownChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Emotion Analysis</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('emotionAnalysis')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.emotionAnalysis}">
+                                <div class="menu-item" ng-click="downloadChart('emotionAnalysis', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('emotionAnalysis', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="emotionAnalysisChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Word Cloud</h3>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': wordCloudFilter === 'all'}" ng-click="switchWordCloud('all')">All</button>
+                            <button ng-class="{'active': wordCloudFilter === 'positive'}" ng-click="switchWordCloud('positive')">Positive</button>
+                            <button ng-class="{'active': wordCloudFilter === 'neutral'}" ng-click="switchWordCloud('neutral')">Neutral</button>
+                            <button ng-class="{'active': wordCloudFilter === 'negative'}" ng-click="switchWordCloud('negative')">Negative</button>
+                            </div>
+                        </div>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('wordCloud')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.wordCloud}">
+                                <div class="menu-item" ng-click="downloadChart('wordCloud', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('wordCloud', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="wordCloudChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sentiment Trend</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('sentimentTrend')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.sentimentTrend}">
+                                <div class="menu-item" ng-click="downloadChart('sentimentTrend', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('sentimentTrend', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="sentimentTrendChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Category-wise Sentiment</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('categorySentiment')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.categorySentiment}">
+                                <div class="menu-item" ng-click="downloadChart('categorySentiment', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('categorySentiment', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="categorySentimentChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Social Platform Sentiment</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('socialPlatformSent')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.socialPlatformSent}">
+                                <div class="menu-item" ng-click="downloadChart('socialPlatformSent', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('socialPlatformSent', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="socialPlatformSentimentChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Review Platform Sentiment</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('reviewPlatformSent')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewPlatformSent}">
+                                <div class="menu-item" ng-click="downloadChart('reviewPlatformSent', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('reviewPlatformSent', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="reviewPlatformSentimentChartConfig"></div>
+                </div>
+
+                <div class="chart-card" style="grid-column: 1 / -1;">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Keyword-Category Correlation</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('keywordCorrelation')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.keywordCorrelation}">
+                                <div class="menu-item" ng-click="downloadChart('keywordCorrelation', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('keywordCorrelation', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container large" hc-chart="keywordCategoryCorrelationChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: Timeline & Insights -->
+        <div ng-switch-when="timeline" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M4 12h16M12 4v16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </span>Timeline & Insights</h2>
+            <div class="section-subtitle">Track complaint evolution and discover recent activity.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Creation vs Resolution Timeline</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('timeline')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.timeline}">
+                                <div class="menu-item" ng-click="downloadChart('timeline', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('timeline', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container large" hc-chart="timelineChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Recent Complaint Feed</h3>
+                    </div>
+                    <div class="feed-panel">
+                        <div class="feed-item" ng-repeat="feed in recentFeed">
+                            <div class="feed-item-header">
+                                <div class="feed-item-title">{{feed.title}}</div>
+                                <div class="feed-item-time">{{feed.time}}</div>
+                            </div>
+                            <div class="feed-item-meta">{{feed.category}} • {{feed.status}} • {{feed.priority}} • {{feed.source}} • {{feed.location}}</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Volume Heatmap (Day & Hour)</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('volumeHeatmap')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.volumeHeatmap}">
+                                <div class="menu-item" ng-click="downloadChart('volumeHeatmap', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('volumeHeatmap', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container large" hc-chart="volumeHeatmapConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top Repeating Issues</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('repeatingIssues')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.repeatingIssues}">
+                                <div class="menu-item" ng-click="downloadChart('repeatingIssues', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('repeatingIssues', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="repeatingIssuesChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Complaint Lifecycle Duration Trend</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('lifecycleDuration')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.lifecycleDuration}">
+                                <div class="menu-item" ng-click="downloadChart('lifecycleDuration', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('lifecycleDuration', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="lifecycleDurationTrendChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">First-Contact Resolution Rate</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('fcrRate')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.fcrRate}">
+                                <div class="menu-item" ng-click="downloadChart('fcrRate', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('fcrRate', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="firstContactResolutionRateChartConfig"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section: AI & Smart Insights -->
+        <div ng-switch-when="ai" class="dashboard-section">
+            <h2 class="section-title"><span class="section-icon" aria-hidden="true">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 8h8v8H8V8zM3 12h2m14 0h2M12 3v2m0 14v2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+            </span>AI & Smart Insights</h2>
+            <div class="section-subtitle">Auto summaries, predictions, and correlations for faster decisions.</div>
+            <div class="charts-grid">
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Predictive Analytics</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('predictive')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.predictive}">
+                                <div class="menu-item" ng-click="downloadChart('predictive', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('predictive', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="predictiveChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Anomaly Detection</h3>
+                        <div class="chart-menu" ng-click="$event.stopPropagation()">
+                            <button class="menu-button" ng-click="toggleChartMenu('anomaly')">⋯</button>
+                            <div class="menu-dropdown" ng-class="{'show': chartMenus.anomaly}">
+                                <div class="menu-item" ng-click="downloadChart('anomaly', 'png')">Download PNG</div>
+                                <div class="menu-item" ng-click="downloadChart('anomaly', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-container" hc-chart="anomalyChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Top 3 Categories (This Week)</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiTopCategoriesChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Most Delayed Locations</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiDelayedLocationsChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Fastest Resolving Team / Assignee</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiFastestResolvingChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Emerging Complaint Trends (WoW)</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiEmergingTrendsChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Predicted Next-Month Volume</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiForecastNextMonthChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Sentiment Summary</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiSentimentSummaryChartConfig"></div>
+                </div>
+
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Correlation Highlight</h3>
+                    </div>
+                    <div class="chart-container" hc-chart="aiCorrelationHighlightChartConfig"></div>
+                </div>
+                
+                <div class="chart-card" style="grid-column: 1 / -1;">
+                    <div class="ai-summary">
+                        <h3>AI & Smart Insights</h3>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Top 3 Complaint Categories This Week</div>
+                            <div class="ai-summary-value">Product Quality (34%), Billing (28%), Service Delay (22%)</div>
+                        </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Most Delayed Locations</div>
+                            <div class="ai-summary-value">Colombo (+18h avg), Gampaha (+14h), Kandy (+12h)</div>
+                        </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Fastest Resolving Team / Assignee</div>
+                            <div class="ai-summary-value">Team Alpha (8.4h avg), Sarah J. (7.8h), Mike C. (8.1h)</div>
+                        </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Emerging Complaint Trends (WoW Increase)</div>
+                            <div class="ai-summary-value">Delivery Delays (+12%), App Login Issues (+9%), Refund Wait (+7%)</div>
+                        </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Predicted Next-Month Volume (AI Forecast)</div>
+                            <div class="ai-summary-value">≈ 1,380 (+10.6% vs current)</div>
+                    </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Sentiment Summary</div>
+                            <div class="ai-summary-value">Negative sentiment remains elevated around recent delivery delays; positive feedback clusters around quick refunds and courteous support responses.</div>
+                        </div>
+                        <div class="ai-summary-item">
+                            <div class="ai-summary-label">Correlation Highlight</div>
+                            <div class="ai-summary-value">Social media complaints resolve 30% slower than survey ones.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+    
+    <!-- Scripts -->
+    <script src="app.js"></script>
+    <script src="hcChart.directive.js"></script>
+</body>
+</html>
