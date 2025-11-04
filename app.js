@@ -213,17 +213,17 @@ app.controller('DashboardController', function($scope, $http) {
             };
         }
         return {
-            chart: { type: 'column', backgroundColor: '#fff' },
-            title: { text: null },
-            xAxis: { categories: ['Open', 'In Progress', 'Resolved'] },
-            yAxis: { title: { text: 'Count' } },
+        chart: { type: 'column', backgroundColor: '#fff' },
+        title: { text: null },
+        xAxis: { categories: ['Open', 'In Progress', 'Resolved'] },
+        yAxis: { title: { text: 'Count' } },
             plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
             series: [
                 { name: 'Open', data: [342, null, null], color: statusColors.Open },
                 { name: 'In Progress', data: [null, 589, null], color: statusColors.InProgress },
                 { name: 'Resolved', data: [null, null, 316], color: statusColors.Resolved }
             ],
-            credits: { enabled: false }
+        credits: { enabled: false }
         };
     }
     $scope.statusBreakdownChartConfig = getStatusBreakdownConfig($scope.statusBreakdownType);
@@ -238,7 +238,7 @@ app.controller('DashboardController', function($scope, $http) {
         if (type === 'bar') {
             return {
                 chart: { type: 'column', backgroundColor: '#fff' },
-                title: { text: null },
+        title: { text: null },
                 xAxis: { categories: ['High','Medium','Low'] },
                 yAxis: { title: { text: 'Count' } },
                 plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
@@ -259,7 +259,7 @@ app.controller('DashboardController', function($scope, $http) {
                 { name: 'Medium', y: 469, color: priorityColors.Medium },
                 { name: 'Low', y: 255, color: priorityColors.Low }
             ] }],
-            credits: { enabled: false }
+        credits: { enabled: false }
         };
     }
     $scope.prioritySplitChartConfig = getPrioritySplitConfig($scope.prioritySplitType);
@@ -480,8 +480,8 @@ app.controller('DashboardController', function($scope, $http) {
             };
         }
         return {
-            chart: { type: 'pie', backgroundColor: '#fff' },
-            title: { text: null },
+        chart: { type: 'pie', backgroundColor: '#fff' },
+        title: { text: null },
             plotOptions: { pie: { innerSize: '60%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f} %' } } },
             series: [{ name: 'Source Share', colorByPoint: false, data: data }],
             credits: { enabled: false }
@@ -1400,5 +1400,87 @@ app.controller('DashboardController', function($scope, $http) {
                 $scope.chartMenus[key] = false;
             });
         }
+    };
+
+    // Enhance all chart headers: add fullscreen button and replace menu dots with hamburger
+    function enhanceChartHeaders() {
+        try {
+            var headers = document.querySelectorAll('.chart-card .chart-header');
+            headers.forEach(function(header) {
+                var card = header.closest('.chart-card');
+                var container = card;
+                // Insert fullscreen button if missing
+                if (!header.querySelector('.fullscreen-button')) {
+                    var fsBtn = document.createElement('button');
+                    fsBtn.className = 'fullscreen-button';
+                    fsBtn.title = 'View full screen';
+                    fsBtn.setAttribute('aria-label', 'View full screen');
+                    fsBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/></svg>';
+                    fsBtn.addEventListener('click', function(e){
+                        e.stopPropagation();
+                        card.classList.toggle('fullscreen');
+                        // trigger chart reflow if Highcharts is available
+                        if (window.Highcharts) {
+                            var chartContainer = card.querySelector('[hc-chart]');
+                            if (chartContainer && chartContainer.__highcharts_chart__) {
+                                chartContainer.__highcharts_chart__.reflow();
+                            }
+                        }
+                    });
+                    var menu = header.querySelector('.chart-menu');
+                    if (menu) {
+                        header.insertBefore(fsBtn, menu);
+                    } else {
+                        header.appendChild(fsBtn);
+                    }
+                }
+                // Ensure toolbar exists right under header
+                var toolbar = card.querySelector(':scope > .chart-toolbar');
+                if (!toolbar) {
+                    toolbar = document.createElement('div');
+                    toolbar.className = 'chart-toolbar';
+                    var left = document.createElement('div');
+                    left.className = 'chart-toolbar-left';
+                    var toggle = document.createElement('div');
+                    toggle.className = 'chart-toggle';
+                    left.appendChild(toggle);
+                    toolbar.appendChild(left);
+                    // right side container for menu
+                    var right = document.createElement('div');
+                    right.className = 'chart-menu';
+                    toolbar.appendChild(right);
+                    header.after(toolbar);
+                }
+                // Move existing header menu into toolbar right side
+                var headerMenu = header.querySelector('.chart-menu');
+                if (headerMenu) {
+                    var rightSide = toolbar.querySelector('.chart-menu');
+                    if (rightSide !== headerMenu) {
+                        // move children (button + dropdown) into toolbar menu
+                        rightSide.innerHTML = '';
+                        while (headerMenu.firstChild) {
+                            rightSide.appendChild(headerMenu.firstChild);
+                        }
+                        headerMenu.remove();
+                    }
+                }
+                // Replace menu button content with hamburger icon (in toolbar)
+                var toolbarMenuBtn = toolbar.querySelector('.menu-button');
+                if (toolbarMenuBtn && toolbarMenuBtn.dataset.hamburger !== '1') {
+                    toolbarMenuBtn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 7h18M3 12h18M3 17h18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+                    toolbarMenuBtn.dataset.hamburger = '1';
+                }
+            });
+        } catch (e) { /* noop */ }
+    }
+
+    // Observe DOM changes to enhance dynamic charts
+    setTimeout(enhanceChartHeaders, 0);
+    document.addEventListener('DOMContentLoaded', enhanceChartHeaders);
+    // Also enhance after tab switches
+    var originalSetActiveTab = $scope.setActiveTab;
+    $scope.setActiveTab = function(tab) {
+        originalSetActiveTab.call(this, tab);
+        setTimeout(enhanceChartHeaders, 0);
     };
 });

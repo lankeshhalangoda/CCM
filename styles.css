@@ -203,6 +203,23 @@ body {
     background-color: #F3F4F6;
 }
 
+/* Menu button icon uses inline SVG in markup */
+
+.fullscreen-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6B7280;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+    line-height: 1;
+}
+
+.fullscreen-button:hover {
+    background-color: #F3F4F6;
+}
+
 .menu-dropdown {
     position: absolute;
     right: 0;
@@ -456,8 +473,13 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
+    padding-bottom: 8px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid #E5E7EB;
 }
+
+/* Ensure only fullscreen is on header row */
+.chart-header .chart-menu { display: none; }
 
 .chart-title {
     font-size: 16px;
@@ -532,6 +554,23 @@ body {
 
 .chart-container.small {
     height: 300px;
+}
+
+/* Fullscreen chart */
+.chart-card.fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2000;
+    border-radius: 0;
+    margin: 0;
+    padding: 16px;
+}
+
+.chart-card.fullscreen .chart-container {
+    height: calc(100vh - 80px);
 }
 
 .chart-actions {
