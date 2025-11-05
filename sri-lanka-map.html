@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Sri Lanka Map</title>
+
+  <!-- Highcharts Map core + exporting module -->
+  <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+  <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+
+  <style>
+    html, body { height: 100%; margin: 0; background: transparent; }
+
+    #container { height: 420px; min-width: 310px; max-width: 800px; margin: 0 auto; overflow: hidden; background: transparent; }
+
+    .loading {
+      margin-top: 10em;
+      text-align: center;
+      color: gray;
+    }
+
+    /* Small responsive tweak */
+    @media (max-width: 420px) {
+      #container { width: 95%; margin: 1rem auto; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="container"></div>
+
+  <script>
+    (async () => {
+      try {
+        const resp = await fetch('https://code.highcharts.com/mapdata/countries/lk/lk-all.topo.json');
+        if (!resp.ok) throw new Error('Failed to fetch topology: ' + resp.status);
+        const topology = await resp.json();
+
+        // Prepare demo data. The data is joined to map using value of 'hc-key'
+        // property by default. See API docs for 'joinBy' for more info on linking
+        // data and map.
+        const data = [
+            ['lk-bc', 10], ['lk-mb', 11], ['lk-ja', 12], ['lk-kl', 13],
+            ['lk-ky', 14], ['lk-mt', 15], ['lk-nw', 16], ['lk-ap', 17],
+            ['lk-pr', 18], ['lk-tc', 19], ['lk-ad', 20], ['lk-va', 21],
+            ['lk-mp', 22], ['lk-kg', 23], ['lk-px', 24], ['lk-rn', 25],
+            ['lk-gl', 26], ['lk-hb', 27], ['lk-mh', 28], ['lk-bd', 29],
+            ['lk-mj', 30], ['lk-ke', 31], ['lk-co', 32], ['lk-gq', 33],
+            ['lk-kt', 34]
+        ];
+
+        // Create the chart
+        Highcharts.mapChart('container', {
+            chart: { map: topology, backgroundColor: 'transparent' },
+            title: { text: null },
+
+            mapNavigation: {
+                enabled: true,
+                buttonOptions: { verticalAlign: 'bottom' }
+            },
+
+            colorAxis: { min: 0 },
+
+            series: [{
+                data: data,
+                name: 'Random data',
+                states: { hover: { color: '#BADA55' } },
+                dataLabels: { enabled: false }
+            }]
+        });
+
+      } catch (err) {
+        const container = document.getElementById('container');
+        container.innerHTML = '<div class="loading">Error loading map: ' + (err.message || err) + '</div>';
+        console.error(err);
+      }
+    })();
+  </script>
+
+</body>
+</html>
+
+
