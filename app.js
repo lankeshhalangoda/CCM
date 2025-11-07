@@ -1088,7 +1088,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { 
             type: 'bar', 
             backgroundColor: '#fff',
-            spacingBottom: 50  // Add extra space at bottom for legend and x-axis labels
+            spacingBottom: 60
         },
         title: { text: null },
         xAxis: { 
@@ -1129,37 +1129,15 @@ app.controller('DashboardController', function($scope, $http) {
             ]
         }],
         credits: { enabled: false },
-        legend: { 
-            enabled: true,
-            layout: 'horizontal',
-            align: 'center',
-            verticalAlign: 'bottom',
-            y: 15,  // Position below x-axis labels
-            itemStyle: { fontSize: '12px' },
-            symbolWidth: 15,
-            symbolHeight: 10,
-            symbolRadius: 0,
-            itemFormatter: function() {
-                // Create custom legend items for zones
-                if (this.index === 0) {
-                    return '<span style="color:#10B981;">■</span> Good (≥80%)';
-                } else if (this.index === 1) {
-                    return '<span style="color:#F59E0B;">■</span> Average (60-80%)';
-                } else if (this.index === 2) {
-                    return '<span style="color:#EF4444;">■</span> Poor (<60%)';
-                }
-                return this.name;
-            }
-        }
+        legend: { enabled: false }
     };
     
     // Add custom legend using events since zones don't create separate legend items
     $scope.locationResolutionRateChartConfig.chart.events = {
         load: function() {
             var chart = this;
-            // Position legend below the plot area (after x-axis labels)
-            // Use plotBottom (Y coordinate of bottom of plot area) + spacing for x-axis labels
-            var legendY = chart.plotBottom + 30;  // Below plot area with space for x-axis labels (typically 20-25px)
+            // Position legend at the very bottom inside the chart area
+            var legendY = chart.chartHeight - 20;
             var legendX = chart.chartWidth / 2 - 140;
             
             // Clear any existing legend elements on redraw
@@ -1603,7 +1581,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { 
             type: 'column', 
             backgroundColor: '#fff',
-            spacingBottom: 50
+            spacingBottom: 60
         },
         title: { text: null },
         xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
@@ -1640,7 +1618,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.resolutionRateByChannelChartConfig.chart.events = {
         load: function() {
             var chart = this;
-            var legendY = chart.plotBottom + 30;
+            var legendY = chart.chartHeight - 20;
             var legendX = chart.chartWidth / 2 - 140;
             
             if (chart.customLegend) {
@@ -1686,7 +1664,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { 
             type: 'column', 
             backgroundColor: '#fff',
-            spacingBottom: 50
+            spacingBottom: 60
         },
         title: { text: null },
         xAxis: { categories: ['WhatsApp', 'Messenger', 'Instagram', 'Web'] },
@@ -1722,7 +1700,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.resolutionRateBySocialMessagingChartConfig.chart.events = {
         load: function() {
             var chart = this;
-            var legendY = chart.plotBottom + 30;
+            var legendY = chart.chartHeight - 20;
             var legendX = chart.chartWidth / 2 - 140;
             
             if (chart.customLegend) {
@@ -1768,7 +1746,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { 
             type: 'column', 
             backgroundColor: '#fff',
-            spacingBottom: 50
+            spacingBottom: 60
         },
         title: { text: null },
         xAxis: { categories: ['Google', 'Facebook', 'TripAdvisor'] },
@@ -1804,7 +1782,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.resolutionRateByReviewChartConfig.chart.events = {
         load: function() {
             var chart = this;
-            var legendY = chart.plotBottom + 30;
+            var legendY = chart.chartHeight - 20;
             var legendX = chart.chartWidth / 2 - 140;
             
             if (chart.customLegend) {
