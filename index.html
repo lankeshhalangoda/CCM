@@ -13,9 +13,8 @@
     <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/heatmap.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/highcharts-more.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/wordcloud.min.js"></script>
-    <script src="https://code.highcharts.com/modules/funnel.js"></script>
-    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
-    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/highcharts@11.4.7/modules/funnel.min.js"></script>
+    <!-- Note: highmaps.js removed to avoid error #17 since we use column chart fallback for Geo Complaint Density -->
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
@@ -67,7 +66,7 @@
             <button class="tab" 
                     ng-class="{'active': activeTab === 'overview'}" 
                     ng-click="setActiveTab('overview')"
-                    data-color="blue">
+                    data-color="overview-blue">
                 <span class="tab-icon" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M4 19h16M6 16v-7m4 7V7m4 9V9m4 7v-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -89,7 +88,7 @@
             <button class="tab" 
                     ng-class="{'active': activeTab === 'category'}" 
                     ng-click="setActiveTab('category')"
-                    data-color="orange">
+                    data-color="yellow">
                 <span class="tab-icon" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M3 11l9-7 9 7-9 7-9-7zM12 18l9-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -100,7 +99,7 @@
             <button class="tab" 
                     ng-class="{'active': activeTab === 'location'}" 
                     ng-click="setActiveTab('location')"
-                    data-color="teal">
+                    data-color="social-orange">
                 <span class="tab-icon" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" stroke="currentColor" stroke-width="2"/>
@@ -112,7 +111,7 @@
             <button class="tab" 
                     ng-class="{'active': activeTab === 'resolution'}" 
                     ng-click="setActiveTab('resolution')"
-                    data-color="red">
+                    data-color="support-purple">
                 <span class="tab-icon" aria-hidden="true">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -213,7 +212,12 @@
                 <!-- 1. Channel-wise Complaint Distribution -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Channel-wise Complaint Distribution</h3>
+                        <h3 class="chart-title">Complaint Distribution by Source
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows how complaints are distributed across all reporting sources.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -243,7 +247,12 @@
                 <!-- 2. Complaint Trend Over Time -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Trend Over Time</h3>
+                        <h3 class="chart-title">Complaint Trend Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks total complaints received over time to identify volume fluctuations.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -267,7 +276,12 @@
                 <!-- 3. Complaint Status Breakdown -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Status Breakdown</h3>
+                        <h3 class="chart-title">Complaint Status Breakdown
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays the count of complaints by current status (Open, In Progress, Resolved).</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -297,7 +311,12 @@
                 <!-- 4. Priority Split -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Priority Split</h3>
+                        <h3 class="chart-title">Priority Split
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Illustrates how complaints are divided among priority levels (High, Medium, Low).</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -327,7 +346,12 @@
                 <!-- 5. Status vs Priority Chart -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Status vs Priority Chart</h3>
+                        <h3 class="chart-title">Status vs Priority Chart
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Cross-analyzes complaint priority against current status for workload visibility.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -349,7 +373,12 @@
                 <!-- 6. Complaint Volume by Day & Hour (Bubble chart, half width) -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Volume by Day and Hour</h3>
+                        <h3 class="chart-title">Complaint Volume by Day and Hour
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights when complaints are most frequently received by time of day and week.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -371,7 +400,12 @@
                 <!-- 7. Complaint Growth Rate -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Growth Rate</h3>
+                        <h3 class="chart-title">Complaint Growth Rate
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows percentage increase or decrease in total complaints compared to the previous period.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -393,12 +427,32 @@
                 <!-- 8. Complaints per 1,000 Interactions -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaints per 1,000 Interactions</h3>
+                        <h3 class="chart-title">Complaints per 1,000 Interactions
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Normalizes complaint volume against total interactions to assess service quality.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('perThousand')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.perThousand}">
                                 <div class="menu-item" ng-click="downloadChart('perThousand', 'png')">Download PNG</div>
                                 <div class="menu-item" ng-click="downloadChart('perThousand', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': perThousandChartType === 'column'}" ng-click="switchPerThousand('column')">Bar Chart</button>
+                            <button ng-class="{'active': perThousandChartType === 'donut'}" ng-click="switchPerThousand('donut')">Donut Chart</button>
                             </div>
                         </div>
                     </div>
@@ -421,7 +475,19 @@
                 <!-- 1. Source vs Status -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Source vs Status</h3>
+                        <h3 class="chart-title">Source vs Status
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Compares complaint status distribution across different complaint sources.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('sourceStatus')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceStatus}">
@@ -436,7 +502,19 @@
                 <!-- 2. Source vs Priority -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Source vs Priority</h3>
+                        <h3 class="chart-title">Source vs Priority
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays complaint priority breakdown for each reporting source.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('sourcePriority')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.sourcePriority}">
@@ -451,7 +529,19 @@
                 <!-- 3. Source vs Resolution Time -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Source vs Resolution Time</h3>
+                        <h3 class="chart-title">Resolution Time By Source
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows average resolution duration for each complaint source.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('sourceResTime')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.sourceResTime}">
@@ -466,8 +556,20 @@
                 <!-- 4. Source Share (%) -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Source Share (%)</h3>
-                            </div>
+                        <h3 class="chart-title">Source Share (%)
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights the percentage contribution of each source to total complaint volume.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
                     <div class="chart-toolbar">
                         <div class="chart-toolbar-left">
                             <div class="chart-toggle">
@@ -501,12 +603,32 @@
                 <!-- 5. Social & Messaging Channel Breakdown -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Social & Messaging Channel Breakdown</h3>
+                        <h3 class="chart-title">Social & Messaging Channel Breakdown
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows how many complaints come from each social or messaging channel.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('socialMessagingBreakdown')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.socialMessagingBreakdown}">
                                 <div class="menu-item" ng-click="downloadChart('socialMessagingBreakdown', 'png')">Download PNG</div>
                                 <div class="menu-item" ng-click="downloadChart('socialMessagingBreakdown', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': socialMessagingBreakdownType === 'column'}" ng-click="switchSocialMessagingBreakdown('column')">Bar Chart</button>
+                            <button ng-class="{'active': socialMessagingBreakdownType === 'donut'}" ng-click="switchSocialMessagingBreakdown('donut')">Donut Chart</button>
                             </div>
                         </div>
                     </div>
@@ -516,7 +638,19 @@
                 <!-- 6. Social & Messaging Channel vs Status -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Social & Messaging Channel vs Status</h3>
+                        <h3 class="chart-title">Social & Messaging Channel vs Status
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays complaint status distribution per social or chat platform.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('socialMessagingVsStatus')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.socialMessagingVsStatus}">
@@ -531,7 +665,19 @@
                 <!-- 7. Social & Messaging Channel vs Priority -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Social & Messaging Channel vs Priority</h3>
+                        <h3 class="chart-title">Social & Messaging Channel vs Priority
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights priority mix for complaints from social and messaging channels.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('socialMessagingVsPriority')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.socialMessagingVsPriority}">
@@ -546,7 +692,19 @@
                 <!-- 8. Complaints per Social & Messaging Channel Over Time -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaints per Social & Messaging Channel Over Time</h3>
+                        <h3 class="chart-title">Complaints per Social & Messaging Channel Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks complaint volume trends for each social and chat platform.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('socialMessagingOverTime')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.socialMessagingOverTime}">
@@ -572,12 +730,32 @@
                 <!-- 9. Review Channel Breakdown -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Review Channel Breakdown</h3>
+                        <h3 class="chart-title">Review Channel Breakdown
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows the number of complaints received through each review platform.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('reviewBreakdown')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewBreakdown}">
                                 <div class="menu-item" ng-click="downloadChart('reviewBreakdown', 'png')">Download PNG</div>
                                 <div class="menu-item" ng-click="downloadChart('reviewBreakdown', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': reviewBreakdownType === 'pie'}" ng-click="switchReviewBreakdown('pie')">Donut Chart</button>
+                            <button ng-class="{'active': reviewBreakdownType === 'bar'}" ng-click="switchReviewBreakdown('bar')">Bar Chart</button>
                             </div>
                         </div>
                     </div>
@@ -587,7 +765,19 @@
                 <!-- 11. Review Channel vs Status -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Review Channel vs Status</h3>
+                        <h3 class="chart-title">Review Channel vs Status
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays status distribution of complaints originating from review channels.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('reviewVsStatus')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewVsStatus}">
@@ -602,7 +792,19 @@
                 <!-- 12. Review Channel vs Priority -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Review Channel vs Priority</h3>
+                        <h3 class="chart-title">Review Channel vs Priority
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Illustrates how review-based complaints are prioritized by severity.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('reviewVsPriority')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewVsPriority}">
@@ -617,7 +819,19 @@
                 <!-- 13. Complaints per Review Channel Over Time -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaints per Review Channel Over Time</h3>
+                        <h3 class="chart-title">Complaints per Review Channel Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks review-sourced complaint trends over time.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('reviewOverTime')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.reviewOverTime}">
@@ -643,7 +857,19 @@
             <div class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Top Complaint Categories</h3>
+                        <h3 class="chart-title">Top Complaint Categories
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Lists the most frequent complaint types ranked by volume.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('topCategories')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.topCategories}">
@@ -652,12 +878,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': topCategoriesChartType === 'bar'}" ng-click="switchTopCategories('bar')">Bar Chart</button>
+                            <button ng-class="{'active': topCategoriesChartType === 'donut'}" ng-click="switchTopCategories('donut')">Donut Chart</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="chart-container" hc-chart="topCategoriesChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Category vs Status</h3>
+                        <h3 class="chart-title">Category vs Status
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows status distribution across each complaint category.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('categoryStatus')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryStatus}">
@@ -671,7 +917,19 @@
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Category vs Priority</h3>
+                        <h3 class="chart-title">Category vs Priority
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays the mix of priorities for each category.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('categoryPriority')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryPriority}">
@@ -685,7 +943,19 @@
 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Category vs Resolution Time</h3>
+                        <h3 class="chart-title">Category vs Resolution Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Compares average resolution times for different complaint categories.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('categoryResTime')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryResTime}">
@@ -699,7 +969,19 @@
 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Category Share (%)</h3>
+                        <h3 class="chart-title">Category Share (%)
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows percentage contribution of each category to total complaints.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('categoryShare')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryShare}">
@@ -708,12 +990,32 @@
                             </div>
                         </div>
                     </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                            <button ng-class="{'active': categoryShareType === 'pie'}" ng-click="switchCategoryShare('pie')">Donut Chart</button>
+                            <button ng-class="{'active': categoryShareType === 'bar'}" ng-click="switchCategoryShare('bar')">Bar Chart</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="chart-container" hc-chart="categoryShareChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Category Trend Over Time</h3>
+                        <h3 class="chart-title">Category Trend Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks complaint volume trend for each category over time.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('categoryTrend')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.categoryTrend}">
@@ -735,54 +1037,32 @@
             </span>Keyword Analytics</h2>
             <div class="section-subtitle">Read all complaints and discover key terms and themes.</div>
             <div class="charts-grid">
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Keyword–Category Correlation</h3>
-                        <div class="chart-menu" ng-click="$event.stopPropagation()">
-                            <button class="menu-button" ng-click="toggleChartMenu('keywordCorrelation')">⋯</button>
-                            <div class="menu-dropdown" ng-class="{'show': chartMenus.keywordCorrelation}">
-                                <div class="menu-item" ng-click="downloadChart('keywordCorrelation', 'png')">Download PNG</div>
-                                <div class="menu-item" ng-click="downloadChart('keywordCorrelation', 'csv')">Download CSV</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-container" hc-chart="keywordCategoryCorrelationChartConfig"></div>
-                </div>
-
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Keyword Frequency by Category</h3>
-                        <div class="chart-menu" ng-click="$event.stopPropagation()">
-                            <button class="menu-button" ng-click="toggleChartMenu('keywordFrequencyByCategory')">⋯</button>
-                            <div class="menu-dropdown" ng-class="{'show': chartMenus.keywordFrequencyByCategory}">
-                                <div class="menu-item" ng-click="downloadChart('keywordFrequencyByCategory', 'png')">Download PNG</div>
-                                <div class="menu-item" ng-click="downloadChart('keywordFrequencyByCategory', 'csv')">Download CSV</div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="chart-container" hc-chart="keywordFrequencyByCategoryChartConfig"></div>
-                </div>
-
                 <div class="chart-card" style="grid-column: 1 / -1;">
                     <div class="chart-header">
-                        <h3 class="chart-title">All Complaints (Textual Feed)</h3>
+                        <h3 class="chart-title">Comments
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays a searchable list or table of all customer comments tied to complaints.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
                     <div class="feed-panel">
                         <div class="feed-item" ng-repeat="item in recentFeed">
                             <div class="feed-item-header">
                                 <div class="feed-item-title">{{item.title}}</div>
-                                <div class="feed-item-time">{{item.time}}</div>
                             </div>
                             <div class="feed-item-meta">
-                                <span><strong>Category:</strong> {{item.category}}</span>
-                                &nbsp;|&nbsp;
-                                <span><strong>Status:</strong> {{item.status}}</span>
-                                &nbsp;|&nbsp;
-                                <span><strong>Priority:</strong> {{item.priority}}</span>
-                                &nbsp;|&nbsp;
-                                <span><strong>Source:</strong> {{item.source}}</span>
-                                &nbsp;|&nbsp;
-                                <span><strong>Location:</strong> {{item.location}}</span>
+                                <span class="meta-label">Category:</span>
+                                <span class="info-badge badge-category" ng-style="{'background-color': getCategoryColor(item.category) + '33', 'color': getCategoryColor(item.category), 'border-color': getCategoryColor(item.category)}">{{item.category}}</span>
+                                <span class="meta-label">Status:</span>
+                                <span class="info-badge badge-status" ng-style="{'background-color': getStatusColor(item.status) + '33', 'color': getStatusColor(item.status), 'border-color': getStatusColor(item.status)}">{{item.status}}</span>
+                                <span class="meta-label">Priority:</span>
+                                <span class="info-badge badge-priority" ng-style="{'background-color': getPriorityColor(item.priority) + '33', 'color': getPriorityColor(item.priority), 'border-color': getPriorityColor(item.priority)}">{{item.priority}}</span>
+                                <span class="meta-label">Source:</span>
+                                <span class="info-badge badge-source" ng-style="{'background-color': getSourceColor(item.source) + '33', 'color': getSourceColor(item.source), 'border-color': getSourceColor(item.source)}">{{item.source}}</span>
+                                <span class="meta-label">Location:</span>
+                                <span class="info-badge badge-location" ng-style="{'background-color': getLocationColor(item.location) + '33', 'color': getLocationColor(item.location), 'border-color': getLocationColor(item.location)}">{{item.location}}</span>
+                                <span class="feed-item-time">{{item.time}}</span>
                             </div>
                         </div>
                     </div>
@@ -790,7 +1070,19 @@
 
                 <div class="chart-card" style="grid-column: 1 / -1;">
                     <div class="chart-header">
-                        <h3 class="chart-title">Word Cloud</h3>
+                        <h3 class="chart-title">Word Cloud
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Visualizes the most frequently used keywords in complaint comments.</span>
+                                i
+                            </span>
+                        </h3>
+                        <div class="chart-actions">
+                            <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M4 9V4h5v2H6v3H4zm10-5h5v5h-2V6h-3V4zM9 20H4v-5h2v3h3v2zm11-5v5h-5v-2h3v-3h2z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('wordCloud')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.wordCloud}">
@@ -799,7 +1091,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="chart-container small" hc-chart="wordCloudChartConfig"></div>
+                    <div class="chart-container" hc-chart="wordCloudChartConfig"></div>
                 </div>
             </div>
             </div>
@@ -818,7 +1110,12 @@
                 <!-- 1. Location-wise Complaint Breakdown -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Location-wise Complaint Breakdown</h3>
+                        <h3 class="chart-title">Location-wise Complaint Breakdown
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows total complaint volume by each location or branch.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
                     <div class="chart-toolbar">
                         <div class="chart-toolbar-left">
@@ -841,7 +1138,12 @@
                 <!-- 2. Location-wise Complaint Trend Over Time -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Location-wise Complaint Trend Over Time</h3>
+                        <h3 class="chart-title">Location-wise Complaint Trend Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks how complaint counts change monthly per location.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationTrendDaily')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationTrendDaily}">
@@ -856,15 +1158,27 @@
                 <!-- 2.5. Geo Complaint Density -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Geo Complaint Density</h3>
+                        <h3 class="chart-title">Geo Complaint Density
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Maps complaint intensity geographically for regional analysis.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
-                    <iframe src="sri-lanka-map.html" title="Sri Lanka Map" style="width:100%;height:430px;border:0;"></iframe>
+                    <div class="chart-container" style="padding: 0; height: 350px;">
+                        <iframe src="sri-lanka-map.html" style="width: 100%; height: 100%; border: none; background: transparent; display: block;"></iframe>
+                    </div>
                 </div>
 
                 <!-- 3. Complaint Resolution Rate by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Resolution Rate by Location</h3>
+                        <h3 class="chart-title">Complaint Resolution Rate by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows the percentage of complaints resolved in each location.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationResolutionRate')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationResolutionRate}">
@@ -879,7 +1193,12 @@
                 <!-- 3.5. Complaint SLA Breach Rate by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint SLA Breach Rate by Location</h3>
+                        <h3 class="chart-title">Complaint SLA Breach Rate by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights locations that frequently exceed SLA timelines.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationSlaBreachRate')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationSlaBreachRate}">
@@ -894,7 +1213,12 @@
                 <!-- 4. Complaint Status by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Status by Location</h3>
+                        <h3 class="chart-title">Complaint Status by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays open, in-progress, and resolved complaint counts per location.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationVsStatus')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationVsStatus}">
@@ -909,7 +1233,12 @@
                 <!-- 5. Complaint Priority by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Priority by Location</h3>
+                        <h3 class="chart-title">Complaint Priority by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows how complaint severity levels vary by location.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationVsPriority')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationVsPriority}">
@@ -924,7 +1253,12 @@
                 <!-- 6. Complaint Growth by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Growth by Location</h3>
+                        <h3 class="chart-title">Complaint Growth by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks month-over-month complaint growth or decline per branch.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationGrowth')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationGrowth}">
@@ -939,7 +1273,12 @@
                 <!-- 7. Complaint Source Breakdown by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Source Breakdown by Location</h3>
+                        <h3 class="chart-title">Complaint Source Breakdown by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays which sources contribute most to complaints at each branch.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationVsSource')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationVsSource}">
@@ -954,7 +1293,12 @@
                 <!-- 8. Complaint Source Mix Heatmap by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Source Mix Heatmap by Location</h3>
+                        <h3 class="chart-title">Complaint Source Mix Heatmap by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Visualizes channel composition of complaints across locations.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationSourceHeatmap')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationSourceHeatmap}">
@@ -969,7 +1313,12 @@
                 <!-- 9. Complaints via Social & Messaging Channels by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaints via Social & Messaging Channels by Location</h3>
+                        <h3 class="chart-title">Complaints via Social & Messaging Channels by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows complaint counts from social or chat platforms by location.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationVsSocialMessaging')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationVsSocialMessaging}">
@@ -984,7 +1333,12 @@
                 <!-- 10. Complaints via Review Channels by Location -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaints via Review Channels by Location</h3>
+                        <h3 class="chart-title">Complaints via Review Channels by Location
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays review-based complaint distribution across locations.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('locationVsReview')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.locationVsReview}">
@@ -1012,7 +1366,12 @@
                 <!-- Resolution Graphs -->
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Average Resolution Time by Source</h3>
+                        <h3 class="chart-title">Average Resolution Time by Source
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows how long complaints take to resolve across different sources.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1034,7 +1393,12 @@
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Resolution Rate by Source</h3>
+                        <h3 class="chart-title">Resolution Rate by Source
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks the proportion of resolved complaints for each source.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-actions">
                             <button class="fullscreen-button" title="View full screen" aria-label="View full screen" ng-click="toggleFullscreen($event)">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -1048,42 +1412,96 @@
 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Resolution Rate by Social & Messaging Channel</h3>
+                        <h3 class="chart-title">Average Resolution Time by Social & Messaging Channel
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays average resolution duration by social or messaging platform.</span>
+                                i
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="chart-container" hc-chart="avgResTimeBySocialMessagingChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Resolution Rate by Social & Messaging Channel
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows percentage of complaints resolved per social or messaging platform.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
                     <div class="chart-container" hc-chart="resolutionRateBySocialMessagingChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Resolution Rate by Review Channel</h3>
+                        <h3 class="chart-title">Average Resolution Time by Review Channel
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights resolution efficiency across review sources.</span>
+                                i
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="chart-container" hc-chart="avgResTimeByReviewChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Resolution Rate by Review Channel
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Compares closure success rates between different review platforms.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="resolutionRateByReviewChartConfig"></div>
                         </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Slowest-Resolving Categories</h3>
+                        <h3 class="chart-title">Slowest-Resolving Locations
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Lists branches with the highest average resolution time.</span>
+                                i
+                            </span>
+                        </h3>
+                    </div>
+                    <div class="chart-container" hc-chart="slowestResolvingLocationsChartConfig"></div>
+                </div>
+                
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <h3 class="chart-title">Slowest-Resolving Categories
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Lists complaint types that take longest to resolve.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
                     <div class="chart-container" hc-chart="slowestResolvingCategoriesChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Fastest-Resolving Locations</h3>
-                            </div>
-                    <div class="chart-container" hc-chart="fastestResolvingLocationsChartConfig"></div>
-                        </div>
-                
-                <div class="chart-card">
-                    <div class="chart-header">
-                        <h3 class="chart-title">Complaint Closure Rate Over Time</h3>
+                        <h3 class="chart-title">Complaint Closure Rate Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks the percentage of complaints closed compared to those created over time.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
                     <div class="chart-container" hc-chart="complaintClosureRateChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Processing Funnel</h3>
+                        <h3 class="chart-title">Complaint Processing Funnel
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Visualizes complaint flow through key workflow stages from creation to closure.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container large" hc-chart="funnelChartConfig"></div>
                         </div>
@@ -1100,42 +1518,72 @@
             <div class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">SLA Compliance Rate</h3>
+                        <h3 class="chart-title">SLA Compliance Rate
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows the percentage of complaints resolved within defined SLA targets.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="slaComplianceChartConfig"></div>
                         </div>
         
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">First-Contact Resolution Rate</h3>
+                        <h3 class="chart-title">SLA Breach Rate Over Time
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows the percentage of complaints that exceeded their defined SLA resolution time over time, helping identify process delays and underperforming teams or locations.</span>
+                                i
+                            </span>
+                        </h3>
                     </div>
-                    <div class="chart-container" hc-chart="firstContactResolutionRateChartConfig"></div>
+                    <div class="chart-container" hc-chart="performanceMeterChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Resolved Complaints by Employee</h3>
+                        <h3 class="chart-title">Resolved Complaints by Employee
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Ranks employees by total complaints successfully resolved.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="employeeResolvedCountChartConfig"></div>
         </div>
         
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Avg Time per Complaint (Employees)</h3>
+                        <h3 class="chart-title">Avg Time per Complaint (Employees)
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows average handling time per employee for resolved complaints.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="employeeAvgTimePerComplaintChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Status Breakdown by Employee</h3>
+                        <h3 class="chart-title">Complaint Status Breakdown by Employee
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Displays open, in-progress, and resolved complaints by individual employee.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="employeeStatusBreakdownChartConfig"></div>
                 </div>
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Priority Breakdown by Employee</h3>
+                        <h3 class="chart-title">Complaint Priority Breakdown by Employee
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Highlights priority levels of complaints managed by each employee.</span>
+                                i
+                            </span>
+                        </h3>
                             </div>
                     <div class="chart-container" hc-chart="employeePriorityBreakdownChartConfig"></div>
                 </div>
@@ -1153,12 +1601,25 @@
             <div class="charts-grid">
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Open vs Resolved Timeline</h3>
+                        <h3 class="chart-title">Complaint Status Timeline
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows how complaints transition through statuses over time.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('timeline')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.timeline}">
                                 <div class="menu-item" ng-click="downloadChart('timeline', 'png')">Download PNG</div>
                                 <div class="menu-item" ng-click="downloadChart('timeline', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                                <button ng-class="{'active': timelineChartType === 'daily'}" ng-click="switchTimeline('daily')">Daily</button>
+                                <button ng-class="{'active': timelineChartType === 'monthly'}" ng-click="switchTimeline('monthly')">Monthly</button>
                             </div>
                         </div>
                     </div>
@@ -1169,7 +1630,12 @@
                 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Top Repeating Issues</h3>
+                        <h3 class="chart-title">Top Repeating Issues
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Identifies recurring complaint themes or frequently repeated issues.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('repeatingIssues')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.repeatingIssues}">
@@ -1183,7 +1649,12 @@
 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">Complaint Lifecycle Duration Trend</h3>
+                        <h3 class="chart-title">Complaint Lifecycle Duration Trend
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Tracks how the average time to resolve complaints changes over time.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('lifecycleDuration')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.lifecycleDuration}">
@@ -1192,17 +1663,38 @@
                             </div>
                         </div>
                     </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                                <button ng-class="{'active': lifecycleDurationTrendType === 'daily'}" ng-click="switchLifecycleDurationTrend('daily')">Daily</button>
+                                <button ng-class="{'active': lifecycleDurationTrendType === 'monthly'}" ng-click="switchLifecycleDurationTrend('monthly')">Monthly</button>
+                            </div>
+                        </div>
+                    </div>
                     <div class="chart-container" hc-chart="lifecycleDurationTrendChartConfig"></div>
                 </div>
 
                 <div class="chart-card">
                     <div class="chart-header">
-                        <h3 class="chart-title">First-Contact Resolution Rate</h3>
+                        <h3 class="chart-title">First-Contact Resolution Rate
+                            <span class="chart-info-icon" title="Info">
+                                <span class="chart-info-tooltip">Shows percentage of complaints resolved during the first interaction without escalation.</span>
+                                i
+                            </span>
+                        </h3>
                         <div class="chart-menu" ng-click="$event.stopPropagation()">
                             <button class="menu-button" ng-click="toggleChartMenu('fcrRate')">⋯</button>
                             <div class="menu-dropdown" ng-class="{'show': chartMenus.fcrRate}">
                                 <div class="menu-item" ng-click="downloadChart('fcrRate', 'png')">Download PNG</div>
                                 <div class="menu-item" ng-click="downloadChart('fcrRate', 'csv')">Download CSV</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-toolbar">
+                        <div class="chart-toolbar-left">
+                            <div class="chart-toggle">
+                                <button ng-class="{'active': firstContactResolutionRateType === 'daily'}" ng-click="switchFirstContactResolutionRate('daily')">Daily</button>
+                                <button ng-class="{'active': firstContactResolutionRateType === 'monthly'}" ng-click="switchFirstContactResolutionRate('monthly')">Monthly</button>
                             </div>
                         </div>
                     </div>

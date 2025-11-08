@@ -7,7 +7,10 @@ app.controller('DashboardController', function($scope, $http) {
         if (window.Highcharts && Highcharts.setOptions) {
         Highcharts.setOptions({
             chart: { spacingTop: 36 },
-            colors: ['#3b82f6','#ef4444','#22c55e','#f59e0b','#8b5cf6','#0ea5e9','#ec4899'],
+            colors: ['#007abf','#dc3545','#28a745','#ffc107','#8b5cf6','#0ea5e9','#ec4899'],
+            accessibility: {
+                enabled: false
+            },
             exporting: {
                 buttons: {
                     contextButton: {
@@ -21,23 +24,82 @@ app.controller('DashboardController', function($scope, $http) {
     }
     // Unified source colors
     var sourceColors = {
-        Survey: '#43bccd',
-        Support: '#662e9b',
-        Voice: '#ea3546',
-        Social: '#f86624',
-        Reviews: '#f9c80e'
+        Survey: '#003f5c',
+        Support: '#9a5caf',
+        Voice: '#bc5090',
+        Social: '#ff6361',
+        Reviews: '#ffa600'
     };
     // Status and Priority colors (vibrant & modern)
     var statusColors = {
-        Open: '#22c55e',       // green-500
-        InProgress: '#f59e0b', // amber-500 (yellow)
-        Resolved: '#3b82f6'    // blue-500 (treat as Closed color)
+        Open: '#28a745',       // green
+        InProgress: '#ffc107', // yellow
+        Resolved: '#007abf'    // blue
     };
     var priorityColors = {
-        High: '#ef4444',    // red-500
-        Medium: '#f59e0b',  // amber-500 (yellow)
-        Low: '#22c55e'      // green-500
+        High: '#dc3545',    // red
+        Medium: '#ffc107',  // yellow
+        Low: '#28a745'      // green
     };
+    
+    // Helper functions for badge colors
+    $scope.getStatusColor = function(status) {
+        var statusMap = {
+            'Open': statusColors.Open,
+            'In Progress': statusColors.InProgress,
+            'Resolved': statusColors.Resolved
+        };
+        return statusMap[status] || '#6B7280';
+    };
+    
+    $scope.getPriorityColor = function(priority) {
+        return priorityColors[priority] || '#6B7280';
+    };
+    
+    $scope.getCategoryColor = function(category) {
+        // Map feed categories to chart category colors
+        // Note: categoryColors is defined later, so we use direct color values here
+        var categoryMap = {
+            'Service': '#7209b7',      // Service Delay - Dark Purple
+            'Technical': '#480ca8',     // Technical - Very Dark Purple
+            'Quality': '#9d4edd',      // Product Quality - Purple
+            'Billing': '#f72585',     // Billing - Pink
+            'Shipping': '#560bad',     // Shipping - Deep Purple
+            'Order': '#ff6b35',        // Order - Orange
+            'Account': '#c2185b'       // Account - Magenta
+        };
+        return categoryMap[category] || '#8e24aa'; // Other - Violet
+    };
+    
+    $scope.getSourceColor = function(source) {
+        // Map new source names to color keys
+        var sourceMap = {
+            'Support Form': sourceColors.Support,
+            'Voice Calls': sourceColors.Voice,
+            'Social Channels': sourceColors.Social,
+            'Review Channels': sourceColors.Reviews,
+            'Survey': sourceColors.Survey
+        };
+        return sourceMap[source] || sourceColors[source] || '#6B7280';
+    };
+    
+    $scope.getLocationColor = function(location) {
+        // Use a consistent color scheme for locations
+        var locationColors = {
+            'Colombo': '#007abf',
+            'Gampaha': '#10b981',
+            'Kandy': '#ffc107',
+            'Galle': '#8b5cf6',
+            'Kurunegala': '#dc3545',
+            'Matara': '#06b6d4',
+            'Jaffna': '#f43f5e',
+            'Anuradhapura': '#84cc16',
+            'Ratnapura': '#f86624',
+            'Badulla': '#43bccd'
+        };
+        return locationColors[location] || '#6B7280';
+    };
+    
     // Initialize active tab
     $scope.activeTab = 'overview';
     
@@ -90,16 +152,16 @@ app.controller('DashboardController', function($scope, $http) {
     };
     $scope.channelChartType = 'bar';
     
-    // Recent Feed Data
+    // Comments Feed Data
     $scope.recentFeed = [
-        { title: 'Product quality issue reported', time: '2m ago', category: 'Quality', status: 'Open', priority: 'High', source: 'Voice', location: 'New York' },
-        { title: 'Billing discrepancy complaint', time: '15m ago', category: 'Billing', status: 'In Progress', priority: 'Medium', source: 'Support', location: 'Los Angeles' },
-        { title: 'Service delay concern', time: '32m ago', category: 'Service', status: 'Resolved', priority: 'Low', source: 'Social', location: 'Chicago' },
-        { title: 'Shipping delay inquiry', time: '1h ago', category: 'Shipping', status: 'Open', priority: 'Medium', source: 'Voice', location: 'Houston' },
-        { title: 'Refund request submitted', time: '1h ago', category: 'Billing', status: 'In Progress', priority: 'High', source: 'Support', location: 'Phoenix' },
-        { title: 'Product defect reported', time: '2h ago', category: 'Quality', status: 'Resolved', priority: 'Medium', source: 'Review', location: 'Philadelphia' },
-        { title: 'Account access issue', time: '3h ago', category: 'Technical', status: 'Open', priority: 'High', source: 'Support', location: 'San Antonio' },
-        { title: 'Order cancellation request', time: '3h ago', category: 'Order', status: 'In Progress', priority: 'Medium', source: 'Voice', location: 'San Diego' }
+        { title: 'I ordered a product online two weeks ago and it still has not arrived. The tracking information shows it was shipped but there have been no updates for the past ten days. I have tried contacting customer service multiple times but only received automated responses. This is completely unacceptable and I need a refund immediately or the product delivered within the next three days.', time: '2m ago', category: 'Shipping', status: 'Open', priority: 'High', source: 'Support Form', location: 'Colombo' },
+        { title: 'The product I received was damaged and not as described in the advertisement. The packaging was torn and the item inside has scratches and dents. When I tried to return it, the return process was complicated and I was told I would have to pay for return shipping. This is terrible customer service and I want a full refund including the shipping costs I already paid.', time: '15m ago', category: 'Quality', status: 'In Progress', priority: 'High', source: 'Social Platforms', location: 'Gampaha' },
+        { title: 'I was charged twice for the same order and my bank account shows two separate transactions. I have contacted your billing department three times this week but no one has responded to my emails or phone calls. I need this duplicate charge refunded immediately as it has caused an overdraft fee in my account. This is urgent and I expect a response within 24 hours.', time: '32m ago', category: 'Billing', status: 'In Progress', priority: 'High', source: 'Voice Calls', location: 'Kandy' },
+        { title: 'The service I received was extremely poor and the staff member was rude and unhelpful. I had to wait over an hour to be served and when I finally got assistance, the employee was dismissive of my concerns. I have been a loyal customer for five years and this experience has made me reconsider my relationship with your company. I expect an apology and compensation for my time.', time: '1h ago', category: 'Service', status: 'Open', priority: 'Medium', source: 'Review Platforms', location: 'Galle' },
+        { title: 'My account was locked without any warning or explanation. I cannot access my account to make payments or view my order history. I have tried resetting my password multiple times but the system keeps saying there is an error. I have important orders pending and need immediate access to my account. Please resolve this issue as soon as possible.', time: '1h ago', category: 'Account', status: 'In Progress', priority: 'High', source: 'Support Form', location: 'Kurunegala' },
+        { title: 'The item I received is completely different from what I ordered. The description said it was a premium quality product but what arrived looks like a cheap knockoff. The color is wrong, the size is incorrect, and the material feels nothing like what was advertised. I want a replacement with the correct item or a full refund including all shipping charges.', time: '2h ago', category: 'Quality', status: 'Resolved', priority: 'Medium', source: 'Social Platforms', location: 'Matara' },
+        { title: 'I have been trying to cancel my subscription for the past month but cannot find the cancellation option anywhere on your website. Every time I try to contact support, I am put on hold for over thirty minutes and then disconnected. This is frustrating and I feel like you are making it intentionally difficult to cancel. I want my subscription cancelled immediately and a refund for the last billing cycle.', time: '3h ago', category: 'Billing', status: 'Open', priority: 'High', source: 'Voice Calls', location: 'Jaffna' },
+        { title: 'The technical support I received was completely unhelpful and the representative did not understand my problem. I explained the issue three times and they kept giving me the same generic troubleshooting steps that I had already tried. After wasting two hours on the phone, I am no closer to resolving my issue. I need someone with actual technical knowledge to help me fix this problem.', time: '3h ago', category: 'Technical', status: 'In Progress', priority: 'Medium', source: 'Support Form', location: 'Anuradhapura' }
     ];
     
     // Daily data for last 14 days
@@ -108,6 +170,14 @@ app.controller('DashboardController', function($scope, $http) {
         var date = new Date();
         date.setDate(date.getDate() - i);
         dailyDates.push(date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }));
+    }
+    
+    // Monthly data for last 12 months
+    var monthlyDates = [];
+    for (var i = 11; i >= 0; i--) {
+        var date = new Date();
+        date.setMonth(date.getMonth() - i);
+        monthlyDates.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
     }
     
     // Helper function to add data labels on top of bars
@@ -157,10 +227,10 @@ app.controller('DashboardController', function($scope, $http) {
             colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
         series: [
             { name: 'Survey', data: [12, 15, 18, 14, 20, 16, 22, 19, 24, 21, 18, 20, 23, 25] },
-            { name: 'Support', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
-            { name: 'Voice', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
-            { name: 'Social', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
-            { name: 'Reviews', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
+            { name: 'Support Form', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
+            { name: 'Voice Calls', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
+            { name: 'Social Channels', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
+            { name: 'Review Channels', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -192,10 +262,10 @@ app.controller('DashboardController', function($scope, $http) {
             };
             baseConfig.series = [
                 { name: 'Survey', data: [156], color: sourceColors.Survey },
-                { name: 'Support', data: [482], color: sourceColors.Support },
-                { name: 'Voice', data: [721], color: sourceColors.Voice },
-                { name: 'Social', data: [243], color: sourceColors.Social },
-                { name: 'Reviews', data: [168], color: sourceColors.Reviews }
+                { name: 'Support Form', data: [482], color: sourceColors.Support },
+                { name: 'Voice Calls', data: [721], color: sourceColors.Voice },
+                { name: 'Social Channels', data: [243], color: sourceColors.Social },
+                { name: 'Review Channels', data: [168], color: sourceColors.Reviews }
             ];
         } else {
             baseConfig.chart = { type: 'pie', backgroundColor: '#fff' };
@@ -213,10 +283,10 @@ app.controller('DashboardController', function($scope, $http) {
                 colorByPoint: false,
                 data: [
                     { name: 'Survey', y: 156, color: sourceColors.Survey },
-                    { name: 'Support', y: 482, color: sourceColors.Support },
-                    { name: 'Voice', y: 721, color: sourceColors.Voice },
-                    { name: 'Social', y: 243, color: sourceColors.Social },
-                    { name: 'Reviews', y: 168, color: sourceColors.Reviews }
+                    { name: 'Support Form', y: 482, color: sourceColors.Support },
+                    { name: 'Voice Calls', y: 721, color: sourceColors.Voice },
+                    { name: 'Social Channels', y: 243, color: sourceColors.Social },
+                    { name: 'Review Channels', y: 168, color: sourceColors.Reviews }
                 ]
             }];
         }
@@ -337,7 +407,7 @@ app.controller('DashboardController', function($scope, $http) {
         colorAxis: {
             min: 0,
             minColor: '#FFFFFF',
-            maxColor: '#3B82F6'
+            maxColor: '#007abf'
         },
         xAxis: {
             categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -389,28 +459,48 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: true, radius: 4 }
             }
         },
-        colors: ['#3B82F6'],
+        colors: ['#007abf'],
         series: [{ name: 'Growth %', data: [5, 3, -2, 4, 6, 2, -1, 3, 4, 2, 1, 5] }],
         credits: { enabled: false },
         legend: { enabled: false }
     };
 
     // Complaints per 1,000 Interactions (normalized KPI) - Multi colors like channel-wise distribution
-    $scope.perThousandChartConfig = {
-        chart: { type: 'column', backgroundColor: '#fff' },
-        title: { text: null },
-        xAxis: { categories: [''] },
-        yAxis: { title: { text: 'Complaints per 1,000 Interactions' } },
-        plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' }, formatter: function(){ return this.y; } } } },
-        series: [
-            { name: 'Survey', data: [2.4], color: sourceColors.Survey },
-            { name: 'Support', data: [4.8], color: sourceColors.Support },
-            { name: 'Voice', data: [6.1], color: sourceColors.Voice },
-            { name: 'Social', data: [3.2], color: sourceColors.Social },
-            { name: 'Reviews', data: [1.7], color: sourceColors.Reviews }
-        ],
-        credits: { enabled: false },
-        legend: { enabled: true }
+    $scope.perThousandChartType = 'column';
+    function getPerThousandConfig(type) {
+        var data = [
+            { name: 'Survey', y: 2.4, color: sourceColors.Survey },
+            { name: 'Support Form', y: 4.8, color: sourceColors.Support },
+            { name: 'Voice Calls', y: 6.1, color: sourceColors.Voice },
+            { name: 'Social Platforms', y: 3.2, color: sourceColors.Social },
+            { name: 'Review Platforms', y: 1.7, color: sourceColors.Reviews }
+        ];
+        if (type === 'donut') {
+            return {
+                chart: { type: 'pie', backgroundColor: '#fff' },
+                title: { text: null },
+                plotOptions: { pie: { innerSize: '60%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' } } },
+                series: [{ name: 'Complaints per 1,000', colorByPoint: false, data: data }],
+                credits: { enabled: false }
+            };
+        }
+        return {
+            chart: { type: 'column', backgroundColor: '#fff' },
+            title: { text: null },
+            xAxis: { categories: [''] },
+            yAxis: { title: { text: 'Complaints per 1,000 Interactions' } },
+            plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' }, formatter: function(){ return this.y; } } } },
+            series: data.map(function(item) {
+                return { name: item.name, data: [item.y], color: item.color };
+            }),
+            credits: { enabled: false },
+            legend: { enabled: true }
+        };
+    }
+    $scope.perThousandChartConfig = getPerThousandConfig($scope.perThousandChartType);
+    $scope.switchPerThousand = function(type) {
+        $scope.perThousandChartType = type;
+        $scope.perThousandChartConfig = getPerThousandConfig(type);
     };
     
     // ============================================
@@ -421,7 +511,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourceStatusChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
+        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             column: {
@@ -448,7 +538,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourcePriorityChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
+        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             column: {
@@ -476,7 +566,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourceResTimeChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
+        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
         yAxis: [{ 
             title: { text: 'Hours' },
             labels: { format: '{value}h' }
@@ -499,12 +589,13 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#10B981', '#EF4444'],
+        colors: ['#007abf', '#dc3545'],
         series: [
             {
                 name: 'Avg Resolution Time',
                 type: 'column',
-                data: [12, 18, 24, 15, 10]
+                data: [12, 18, 24, 15, 10],
+                color: '#007abf'
             },
             {
                 name: 'Target',
@@ -532,10 +623,10 @@ app.controller('DashboardController', function($scope, $http) {
         colors: ['#FFB6C1', '#87CEEB', '#98D8C8', '#F7DC6F', '#BB8FCE'],
         series: [
             { name: 'Survey', data: [12, 15, 18, 14, 20, 16, 22, 19, 24, 21, 18, 20, 23, 25] },
-            { name: 'Support', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
-            { name: 'Voice', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
-            { name: 'Social', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
-            { name: 'Reviews', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
+            { name: 'Support Form', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
+            { name: 'Voice Calls', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
+            { name: 'Social Channels', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
+            { name: 'Review Channels', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -545,10 +636,10 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourceShareType = 'pie';
     function getSourceShareConfig(type) {
         var data = [
-            { name: 'Voice', y: 721, color: sourceColors.Voice },
-            { name: 'Support', y: 482, color: sourceColors.Support },
-            { name: 'Social', y: 243, color: sourceColors.Social },
-            { name: 'Reviews', y: 168, color: sourceColors.Reviews },
+            { name: 'Voice Calls', y: 721, color: sourceColors.Voice },
+            { name: 'Support Form', y: 482, color: sourceColors.Support },
+            { name: 'Social Channels', y: 243, color: sourceColors.Social },
+            { name: 'Review Channels', y: 168, color: sourceColors.Reviews },
             { name: 'Survey', y: 156, color: sourceColors.Survey }
         ];
         if (type === 'bar') {
@@ -576,20 +667,40 @@ app.controller('DashboardController', function($scope, $http) {
         $scope.sourceShareChartConfig = getSourceShareConfig(type);
     };
 
-    // Social & Messaging Channel Breakdown (Whatsapp - #25d366, Messenger - #0099e5, Instagram - #c32aa3, Web - #a6b1b7)
-    $scope.socialMessagingBreakdownChartConfig = {
-        chart: { type: 'column', backgroundColor: '#fff' },
-        title: { text: null },
-        xAxis: { categories: [''] },
-        yAxis: { title: { text: 'Complaints' } },
-        plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
-        series: [
-            { name: 'WhatsApp', data: [142], color: '#25d366' },
-            { name: 'Messenger', data: [118], color: '#16baff' },
-            { name: 'Instagram', data: [98], color: '#ff0369' },
-            { name: 'Web', data: [86], color: '#616161' }
-        ],
-        credits: { enabled: false }
+    // Social & Messaging Channel Breakdown (Whatsapp - #25d366, Messenger - #1877f2, Instagram - #c32aa3, Web - #a6b1b7)
+    $scope.socialMessagingBreakdownType = 'column';
+    function getSocialMessagingBreakdownConfig(type) {
+        var data = [
+            { name: 'WhatsApp', y: 142, color: '#25d366' },
+            { name: 'Messenger', y: 118, color: '#1877f2' },
+            { name: 'Instagram', y: 98, color: '#ff0369' },
+            { name: 'Web', y: 86, color: '#616161' }
+        ];
+        if (type === 'donut') {
+            return {
+                chart: { type: 'pie', backgroundColor: '#fff' },
+                title: { text: null },
+                plotOptions: { pie: { innerSize: '60%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' } } },
+                series: [{ name: 'Complaints', colorByPoint: false, data: data }],
+                credits: { enabled: false }
+            };
+        }
+        return {
+            chart: { type: 'column', backgroundColor: '#fff' },
+            title: { text: null },
+            xAxis: { categories: [''] },
+            yAxis: { title: { text: 'Complaints' } },
+            plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
+            series: data.map(function(item) {
+                return { name: item.name, data: [item.y], color: item.color };
+            }),
+            credits: { enabled: false }
+        };
+    }
+    $scope.socialMessagingBreakdownChartConfig = getSocialMessagingBreakdownConfig($scope.socialMessagingBreakdownType);
+    $scope.switchSocialMessagingBreakdown = function(type) {
+        $scope.socialMessagingBreakdownType = type;
+        $scope.socialMessagingBreakdownChartConfig = getSocialMessagingBreakdownConfig(type);
     };
 
     // Social & Messaging Channel vs Status
@@ -660,7 +771,7 @@ app.controller('DashboardController', function($scope, $http) {
         },
         series: [
             { name: 'WhatsApp', data: [12,14,15,16,18,20,19,21,22,20,18,19,21,23], color: '#25d366' },
-            { name: 'Messenger', data: [10,11,12,12,13,14,14,15,16,14,13,14,15,16], color: '#16baff' },
+            { name: 'Messenger', data: [10,11,12,12,13,14,14,15,16,14,13,14,15,16], color: '#1877f2' },
             { name: 'Instagram', data: [8,9,10,10,11,12,12,13,14,12,11,12,13,14], color: '#ff0369' },
             { name: 'Web', data: [7,8,9,9,10,11,11,12,13,11,10,11,12,13], color: '#616161' }
         ],
@@ -700,19 +811,42 @@ app.controller('DashboardController', function($scope, $http) {
     };
 
     // Review Channel Breakdown (Google -#ea4335, Facebook - #1877f2, TripAdvisor - #0caa41)
-    $scope.reviewBreakdownChartConfig = {
-        chart: { type: 'pie', backgroundColor: '#fff' },
-        title: { text: null },
-        plotOptions: { pie: { innerSize: '55%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' } } },
-        series: [{
-            name: 'Reviews', colorByPoint: true,
-            data: [
-                { name: 'Google', y: 168, color: '#ea4335' },
-                { name: 'Facebook', y: 125, color: '#1877f2' },
-                { name: 'TripAdvisor', y: 62, color: '#0caa41' }
-            ]
-        }],
-        credits: { enabled: false }
+    $scope.reviewBreakdownType = 'pie';
+    function getReviewBreakdownConfig(type) {
+        var data = [
+            { name: 'Google', y: 168, color: '#ea4335' },
+            { name: 'Facebook', y: 125, color: '#1877f2' },
+            { name: 'TripAdvisor', y: 62, color: '#00AF87' }
+        ];
+        if (type === 'bar') {
+            return {
+                chart: { type: 'column', backgroundColor: '#fff' },
+                title: { text: null },
+                xAxis: { categories: [''] },
+                yAxis: { title: { text: 'Complaints' } },
+                plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
+                series: data.map(function(item) {
+                    return { name: item.name, data: [item.y], color: item.color };
+                }),
+                credits: { enabled: false },
+                legend: { enabled: true }
+            };
+        }
+        return {
+            chart: { type: 'pie', backgroundColor: '#fff' },
+            title: { text: null },
+            plotOptions: { pie: { innerSize: '55%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' } } },
+            series: [{
+                name: 'Review Platforms', colorByPoint: false,
+                data: data
+            }],
+            credits: { enabled: false }
+        };
+    }
+    $scope.reviewBreakdownChartConfig = getReviewBreakdownConfig($scope.reviewBreakdownType);
+    $scope.switchReviewBreakdown = function(type) {
+        $scope.reviewBreakdownType = type;
+        $scope.reviewBreakdownChartConfig = getReviewBreakdownConfig(type);
     };
 
     // Review Channel vs Status
@@ -784,7 +918,7 @@ app.controller('DashboardController', function($scope, $http) {
         series: [
             { name: 'Google', data: [12,14,15,16,18,20,19,21,22,20,18,19,21,23], color: '#ea4335' },
             { name: 'Facebook', data: [9,10,11,11,12,13,13,14,15,13,12,13,14,15], color: '#1877f2' },
-            { name: 'TripAdvisor', data: [4,5,5,6,6,7,7,8,8,7,6,7,8,9], color: '#0caa41' }
+            { name: 'TripAdvisor', data: [4,5,5,6,6,7,7,8,8,7,6,7,8,9], color: '#00AF87' }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -837,20 +971,49 @@ app.controller('DashboardController', function($scope, $http) {
     // SECTION 3: Category & Location Analytics
     // ============================================
     
-    // Top Complaint Categories - Horizontal bar
-    // Category color palette for Top Categories legend
+    // Top Complaint Categories - Horizontal bar with donut switch
+    // Category color palette for Top Categories legend (8 colors excluding blue, red, yellow, green)
     var categoryColors = {
-        'Product Quality': (keywordColors && keywordColors.quality) || '#3b82f6',
-        'Billing': (keywordColors && keywordColors.billing) || '#10b981',
-        'Service Delay': (keywordColors && keywordColors.delay) || '#f59e0b',
-        'Shipping': (keywordColors && keywordColors.delivery) || '#8b5cf6',
-        'Technical': '#06b6d4',
-        'Order': '#f43f5e',
-        'Account': '#84cc16',
-        'Other': '#a855f7'
+        'Product Quality': (keywordColors && keywordColors.quality) || '#9d4edd',  // Purple
+        'Billing': (keywordColors && keywordColors.billing) || '#f72585',            // Pink
+        'Service Delay': (keywordColors && keywordColors.delay) || '#7209b7',         // Dark Purple
+        'Shipping': (keywordColors && keywordColors.delivery) || '#560bad',          // Deep Purple
+        'Technical': '#480ca8',                                                       // Very Dark Purple
+        'Order': '#ff6b35',                                                           // Orange
+        'Account': '#c2185b',                                                         // Magenta
+        'Other': '#8e24aa'                                                            // Violet
     };
 
-    $scope.topCategoriesChartConfig = {
+    $scope.topCategoriesChartType = 'bar';
+    function getTopCategoriesConfig(type) {
+        var data = [
+            { name: 'Product Quality', y: 342, color: categoryColors['Product Quality'] },
+            { name: 'Billing', y: 289, color: categoryColors['Billing'] },
+            { name: 'Service Delay', y: 245, color: categoryColors['Service Delay'] },
+            { name: 'Shipping', y: 198, color: categoryColors['Shipping'] },
+            { name: 'Technical', y: 156, color: categoryColors['Technical'] },
+            { name: 'Order', y: 89, color: categoryColors['Order'] },
+            { name: 'Account', y: 78, color: categoryColors['Account'] },
+            { name: 'Other', y: 17, color: categoryColors['Other'] }
+        ];
+        
+        if (type === 'donut') {
+            return {
+                chart: { type: 'pie', backgroundColor: '#fff' },
+                title: { text: null },
+                plotOptions: {
+                    pie: {
+                        innerSize: '60%',
+                        showInLegend: true,
+                        dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' }
+                    }
+                },
+                series: [{ name: 'Complaints', colorByPoint: false, data: data }],
+                credits: { enabled: false }
+            };
+        }
+        
+        return {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
         xAxis: { 
@@ -874,18 +1037,15 @@ app.controller('DashboardController', function($scope, $http) {
             name: 'Complaints',
             showInLegend: true,
             legendType: 'point',
-            data: [
-                { name: 'Product Quality', y: 342, color: categoryColors['Product Quality'] },
-                { name: 'Billing', y: 289, color: categoryColors['Billing'] },
-                { name: 'Service Delay', y: 245, color: categoryColors['Service Delay'] },
-                { name: 'Shipping', y: 198, color: categoryColors['Shipping'] },
-                { name: 'Technical', y: 156, color: categoryColors['Technical'] },
-                { name: 'Order', y: 89, color: categoryColors['Order'] },
-                { name: 'Account', y: 78, color: categoryColors['Account'] },
-                { name: 'Other', y: 17, color: categoryColors['Other'] }
-            ]
+                data: data
         }],
         credits: { enabled: false }
+        };
+    }
+    $scope.topCategoriesChartConfig = getTopCategoriesConfig($scope.topCategoriesChartType);
+    $scope.switchTopCategories = function(type) {
+        $scope.topCategoriesChartType = type;
+        $scope.topCategoriesChartConfig = getTopCategoriesConfig(type);
     };
     
     // Category vs Status - Stacked bar
@@ -948,7 +1108,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.topLocationsChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura', 'Ratnapura', 'Badulla'] },
         yAxis: { title: { text: 'Complaints' } },
         plotOptions: {
             bar: {
@@ -961,7 +1121,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#F59E0B'],
+        colors: ['#ffc107'],
         series: [{
             name: 'Complaints',
             data: [142, 125, 98, 78, 65, 59, 52, 48, 45, 42]
@@ -976,10 +1136,10 @@ app.controller('DashboardController', function($scope, $http) {
         colorAxis: {
             min: 0,
             minColor: '#FFFFFF',
-            maxColor: '#F59E0B'
+            maxColor: '#ffc107'
         },
         xAxis: {
-            categories: ['New York', 'LA', 'Chicago', 'Houston', 'Phoenix']
+            categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala']
         },
         yAxis: {
             categories: ['Quality', 'Billing', 'Service', 'Shipping', 'Technical'],
@@ -1009,9 +1169,9 @@ app.controller('DashboardController', function($scope, $http) {
         xAxis: { categories: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug'] },
         yAxis: { title: { text: 'Complaints' } },
         series: [
-            { name: 'New York', data: [142,150,148,155,162,158,165,170] },
-            { name: 'Los Angeles', data: [125,130,128,132,137,140,142,145] },
-            { name: 'Chicago', data: [98,102,101,105,110,112,114,118] }
+            { name: 'Colombo', data: [142,150,148,155,162,158,165,170] },
+            { name: 'Gampaha', data: [125,130,128,132,137,140,142,145] },
+            { name: 'Kandy', data: [98,102,101,105,110,112,114,118] }
         ],
         credits: { enabled: false }
     };
@@ -1023,7 +1183,7 @@ app.controller('DashboardController', function($scope, $http) {
     // 1. Location Wise Complaint Breakdown (horizontal bar/pie toggle)
     $scope.locationBreakdownType = 'bar';
     function getLocationBreakdownConfig(type) {
-        var locations = ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'];
+        var locations = ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura', 'Ratnapura', 'Badulla'];
         var data = [342, 289, 245, 198, 156, 142, 128, 115, 98, 87];
         if (type === 'pie') {
             return {
@@ -1050,7 +1210,7 @@ app.controller('DashboardController', function($scope, $http) {
                     }
                 }
             },
-            colors: ['#14B8A6'],
+            colors: ['#007abf'],
             series: [{ name: 'Complaints', data: data }],
             credits: { enabled: false }
         };
@@ -1073,11 +1233,11 @@ app.controller('DashboardController', function($scope, $http) {
             }
         },
         series: [
-            { name: 'New York', data: [12,14,15,16,18,20,19,21,22,20,18,19,21,23], color: '#3B82F6' },
-            { name: 'Los Angeles', data: [10,11,12,12,13,14,14,15,16,14,13,14,15,16], color: '#10B981' },
-            { name: 'Chicago', data: [8,9,10,10,11,12,12,13,14,12,11,12,13,14], color: '#F59E0B' },
-            { name: 'Houston', data: [7,8,9,9,10,11,11,12,13,11,10,11,12,13], color: '#EF4444' },
-            { name: 'Phoenix', data: [6,7,8,8,9,10,10,11,12,10,9,10,11,12], color: '#8B5CF6' }
+            { name: 'Colombo', data: [12,14,15,16,18,20,19,21,22,20,18,19,21,23], color: '#007abf' },
+            { name: 'Gampaha', data: [10,11,12,12,13,14,14,15,16,14,13,14,15,16], color: '#10B981' },
+            { name: 'Kandy', data: [8,9,10,10,11,12,12,13,14,12,11,12,13,14], color: '#ffc107' },
+            { name: 'Galle', data: [7,8,9,9,10,11,11,12,13,11,10,11,12,13], color: '#dc3545' },
+            { name: 'Kurunegala', data: [6,7,8,8,9,10,10,11,12,10,9,10,11,12], color: '#8B5CF6' }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -1092,7 +1252,7 @@ app.controller('DashboardController', function($scope, $http) {
         },
         title: { text: null },
         xAxis: { 
-            categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego', 'Dallas', 'San Jose'],
+            categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura', 'Ratnapura', 'Badulla'],
             title: { text: null }
         },
         yAxis: { 
@@ -1123,9 +1283,9 @@ app.controller('DashboardController', function($scope, $http) {
             data: [85.2, 82.5, 88.1, 79.8, 86.3, 81.2, 83.7, 84.9, 80.5, 87.2],
             zoneAxis: 'y',
             zones: [
-                { value: 60, color: '#EF4444' },   // <60% red
-                { value: 80, color: '#F59E0B' },   // 60-80% yellow
-                { color: '#10B981' }               // >=80% green
+                { value: 60, color: '#dc3545' },   // <60% red
+                { value: 80, color: '#ffc107' },   // 60-80% yellow
+                { color: '#28a745' }               // >=80% green
             ]
         }],
         credits: { enabled: false },
@@ -1150,7 +1310,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Good (≥80%) - Green
             var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#10B981' })
+                .attr({ fill: '#28a745' })
                 .add();
             var text1 = chart.renderer.text('Good (≥80%)', legendX + 20, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1159,7 +1319,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Average (60-80%) - Yellow
             var rect2 = chart.renderer.rect(legendX + 120, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#F59E0B' })
+                .attr({ fill: '#ffc107' })
                 .add();
             var text2 = chart.renderer.text('Average (60-80%)', legendX + 140, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1168,7 +1328,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Poor (<60%) - Red
             var rect3 = chart.renderer.rect(legendX + 280, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#EF4444' })
+                .attr({ fill: '#dc3545' })
                 .add();
             var text3 = chart.renderer.text('Poor (<60%)', legendX + 300, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1181,7 +1341,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationVsStatusChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             bar: {
@@ -1209,7 +1369,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationVsPriorityChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             bar: {
@@ -1237,7 +1397,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationGrowthChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia', 'San Antonio', 'San Diego'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura'] },
         yAxis: { title: { text: 'Growth %' }, labels: { format: '{value}%' } },
         plotOptions: {
             column: {
@@ -1256,8 +1416,8 @@ app.controller('DashboardController', function($scope, $http) {
             data: [5.2, 3.8, -2.1, 4.5, 6.1, 2.3, -1.2, 3.9],
             zoneAxis: 'y',
             zones: [
-                { value: 0, color: '#EF4444' },
-                { color: '#10B981' }
+                { value: 0, color: '#dc3545' },
+                { color: '#28a745' }
             ]
         }],
         credits: { enabled: false },
@@ -1268,7 +1428,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationVsSourceChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             bar: {
@@ -1284,10 +1444,10 @@ app.controller('DashboardController', function($scope, $http) {
         },
         series: [
             { name: 'Survey', data: [45, 38, 32, 28, 22], color: sourceColors.Survey },
-            { name: 'Support', data: [98, 82, 68, 55, 44], color: sourceColors.Support },
-            { name: 'Voice', data: [142, 118, 98, 78, 62], color: sourceColors.Voice },
-            { name: 'Social', data: [38, 32, 28, 22, 18], color: sourceColors.Social },
-            { name: 'Reviews', data: [19, 16, 19, 15, 10], color: sourceColors.Reviews }
+            { name: 'Support Form', data: [98, 82, 68, 55, 44], color: sourceColors.Support },
+            { name: 'Voice Calls', data: [142, 118, 98, 78, 62], color: sourceColors.Voice },
+            { name: 'Social Channels', data: [38, 32, 28, 22, 18], color: sourceColors.Social },
+            { name: 'Review Channels', data: [19, 16, 19, 15, 10], color: sourceColors.Reviews }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -1300,13 +1460,13 @@ app.controller('DashboardController', function($scope, $http) {
         colorAxis: {
             min: 0,
             minColor: '#FFFFFF',
-            maxColor: '#14B8A6'
+            maxColor: '#007abf'
         },
         xAxis: {
-            categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix']
+            categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala']
         },
         yAxis: {
-            categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'],
+            categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'],
             title: null
         },
         plotOptions: {
@@ -1342,7 +1502,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationVsSocialMessagingChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             bar: {
@@ -1358,7 +1518,7 @@ app.controller('DashboardController', function($scope, $http) {
         },
         series: [
             { name: 'WhatsApp', data: [12, 10, 8, 7, 6], color: '#25d366' },
-            { name: 'Messenger', data: [10, 8, 7, 6, 5], color: '#16baff' },
+            { name: 'Messenger', data: [10, 8, 7, 6, 5], color: '#1877f2' },
             { name: 'Instagram', data: [8, 7, 6, 5, 4], color: '#ff0369' },
             { name: 'Web', data: [8, 7, 7, 4, 3], color: '#616161' }
         ],
@@ -1370,7 +1530,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.locationVsReviewChartConfig = {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix'] },
+        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala'] },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             bar: {
@@ -1387,7 +1547,7 @@ app.controller('DashboardController', function($scope, $http) {
         series: [
             { name: 'Google', data: [10, 8, 7, 6, 5], color: '#ea4335' },
             { name: 'Facebook', data: [7, 6, 5, 5, 3], color: '#1877f2' },
-            { name: 'TripAdvisor', data: [2, 2, 2, 1, 1], color: '#0caa41' }
+            { name: 'TripAdvisor', data: [2, 2, 2, 1, 1], color: '#00AF87' }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -1399,7 +1559,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { type: 'bar', backgroundColor: '#fff' },
         title: { text: null },
         xAxis: {
-            categories: ['New York', 'Los Angeles', 'Chicago', 'Houston', 'Phoenix', 'Philadelphia'],
+            categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara'],
             title: { text: null }
         },
         yAxis: {
@@ -1429,10 +1589,46 @@ app.controller('DashboardController', function($scope, $http) {
             data: [12.4, 18.6, 9.8, 22.1, 15.3, 7.5],
             zoneAxis: 'y',
             zones: [
-                { value: 10, color: '#10B981' },   // <10% green
-                { value: 20, color: '#F59E0B' },   // 10–20% yellow
-                { color: '#EF4444' }               // >=20% red
+                { value: 10, color: '#007abf' },   // <10% blue
+                { value: 20, color: '#ffc107' },   // 10–20% yellow
+                { color: '#dc3545' }               // >=20% red
             ]
+        }],
+        credits: { enabled: false },
+        legend: { enabled: false }
+    };
+
+    // Sri Lanka Geo Complaint Density Map - Using column chart as fallback since map module has issues
+    $scope.sriLankaMapChartConfig = {
+        chart: {
+            type: 'column',
+            backgroundColor: '#fff'
+        },
+        title: { text: null },
+        xAxis: {
+            categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura', 'Ratnapura', 'Badulla', 'Kalutara', 'Ampara', 'Puttalam', 'Trincomalee', 'Vavuniya', 'Mannar', 'Kegalle', 'Polonnaruwa', 'Hambantota', 'Moneragala', 'Batticaloa', 'Mullaitivu', 'Kilinochchi', 'Nuwara Eliya', 'Matale'],
+            title: { text: 'Districts' }
+        },
+        yAxis: {
+            title: { text: 'Complaints' }
+        },
+        plotOptions: {
+            column: {
+                dataLabels: {
+                    enabled: true,
+                    align: 'center',
+                    verticalAlign: 'top',
+                    style: { fontWeight: 'bold', fontSize: '10px' },
+                    formatter: function() { return this.y; }
+                },
+                colorByPoint: true,
+                colors: ['#007abf']
+            }
+        },
+        series: [{
+            name: 'Complaints',
+            data: [54, 40, 42, 51, 50, 55, 38, 41, 44, 45, 68, 62, 35, 58, 49, 53, 46, 39, 37, 56, 43, 47, 45, 48, 52],
+            color: '#007abf'
         }],
         credits: { enabled: false },
         legend: { enabled: false }
@@ -1469,31 +1665,63 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#10B981'],
-        series: [{ name: 'Avg Hours', data: [22, 18, 16, 14, 20] }],
+        colors: ['#007abf'],
+        series: [{ name: 'Avg Hours', data: [22, 18, 16, 14, 20], color: '#007abf' }],
         credits: { enabled: false },
         legend: { enabled: false }
     };
 
     // Category Share (%) - Donut
-    $scope.categoryShareChartConfig = {
-        chart: { type: 'pie', backgroundColor: '#fff' },
-        title: { text: null },
-        plotOptions: {
-            pie: {
-                innerSize: '60%',
-                showInLegend: true,
-                dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' }
-            }
-        },
-        series: [{ name: 'Share', colorByPoint: true, data: [
-            { name: 'Quality', y: 342 },
-            { name: 'Billing', y: 289 },
-            { name: 'Service', y: 245 },
-            { name: 'Shipping', y: 198 },
-            { name: 'Technical', y: 156 }
-        ] }],
-        credits: { enabled: false }
+    $scope.categoryShareType = 'pie';
+    function getCategoryShareConfig(type) {
+        var data = [
+            { name: 'Quality', y: 342, color: categoryColors['Product Quality'] || '#007abf' },
+            { name: 'Billing', y: 289, color: categoryColors['Billing'] || '#007abf' },
+            { name: 'Service', y: 245, color: categoryColors['Service Delay'] || '#007abf' },
+            { name: 'Shipping', y: 198, color: categoryColors['Shipping'] || '#007abf' },
+            { name: 'Technical', y: 156, color: categoryColors['Technical'] || '#007abf' }
+        ];
+        if (type === 'bar') {
+            return {
+                chart: { type: 'column', backgroundColor: '#fff' },
+                title: { text: null },
+                xAxis: { categories: data.map(function(d) { return d.name; }) },
+                yAxis: { title: { text: 'Complaints' } },
+                plotOptions: {
+                    column: {
+                        colorByPoint: false,
+                        dataLabels: {
+                            enabled: true,
+                            align: 'left',
+                            verticalAlign: 'middle',
+                            style: { fontWeight: 'bold', fontSize: '11px' },
+                            formatter: function() { return this.y; }
+                        }
+                    }
+                },
+                series: [{ name: 'Complaints', data: data.map(function(d) { return { y: d.y, color: d.color }; }) }],
+                credits: { enabled: false },
+                legend: { enabled: false }
+            };
+        }
+        return {
+            chart: { type: 'pie', backgroundColor: '#fff' },
+            title: { text: null },
+            plotOptions: {
+                pie: {
+                    innerSize: '60%',
+                    showInLegend: true,
+                    dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' }
+                }
+            },
+            series: [{ name: 'Share', colorByPoint: false, data: data }],
+            credits: { enabled: false }
+        };
+    }
+    $scope.categoryShareChartConfig = getCategoryShareConfig($scope.categoryShareType);
+    $scope.switchCategoryShare = function(type) {
+        $scope.categoryShareType = type;
+        $scope.categoryShareChartConfig = getCategoryShareConfig(type);
     };
 
     // Keyword Frequency by Category (counts)
@@ -1513,7 +1741,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#3B82F6'],
+        colors: ['#007abf'],
         series: [{ name: 'Mentions', data: [520, 410, 360, 280, 240] }],
         credits: { enabled: false },
         legend: { enabled: false }
@@ -1528,10 +1756,10 @@ app.controller('DashboardController', function($scope, $http) {
     function getAvgResTimeConfig(type) {
         var data = [
             { name: 'Survey', y: 12, color: sourceColors.Survey },
-            { name: 'Support', y: 18, color: sourceColors.Support },
-            { name: 'Voice', y: 24, color: sourceColors.Voice },
-            { name: 'Social', y: 15, color: sourceColors.Social },
-            { name: 'Reviews', y: 10, color: sourceColors.Reviews }
+            { name: 'Support Form', y: 18, color: sourceColors.Support },
+            { name: 'Voice Calls', y: 24, color: sourceColors.Voice },
+            { name: 'Social Channels', y: 15, color: sourceColors.Social },
+            { name: 'Review Channels', y: 10, color: sourceColors.Reviews }
         ];
         if (type === 'donut') {
             return {
@@ -1545,11 +1773,11 @@ app.controller('DashboardController', function($scope, $http) {
         return {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
+        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
         yAxis: { title: { text: 'Hours' } },
         plotOptions: {
             column: {
-                colorByPoint: true,
+                colorByPoint: false,
                 dataLabels: {
                     enabled: true,
                     align: 'center',
@@ -1559,13 +1787,18 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
         series: [{
             name: 'Avg Resolution Time',
-            data: [12, 18, 24, 15, 10]
+            data: [
+                { y: 12, color: sourceColors.Survey },
+                { y: 18, color: sourceColors.Support },
+                { y: 24, color: sourceColors.Voice },
+                { y: 15, color: sourceColors.Social },
+                { y: 10, color: sourceColors.Reviews }
+            ]
         }],
             credits: { enabled: false },
-            legend: { enabled: true }
+            legend: { enabled: false }
         };
     }
     $scope.avgResTimeChartConfig = getAvgResTimeConfig($scope.avgResTimeChartType);
@@ -1575,7 +1808,7 @@ app.controller('DashboardController', function($scope, $http) {
     };
 
     // Resolution Rate by Source (Column, %)
-    // Source totals: Survey: 156, Support: 482, Voice: 721, Social: 243, Reviews: 168
+    // Source totals: Survey: 156, Support Form: 482, Voice Calls: 721, Social Channels: 243, Review Channels: 168
     var resolutionCountsByChannel = [122, 347, 490, 182, 138]; // Estimated resolved counts
     $scope.resolutionRateByChannelChartConfig = {
         chart: { 
@@ -1584,7 +1817,7 @@ app.controller('DashboardController', function($scope, $http) {
             spacingBottom: 60
         },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support', 'Voice', 'Social', 'Reviews'] },
+        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
         yAxis: { title: { text: 'Resolution Rate (%)' }, max: 100, labels: { format: '{value}%' } },
         plotOptions: {
             column: {
@@ -1604,9 +1837,9 @@ app.controller('DashboardController', function($scope, $http) {
             data: [78, 72, 68, 75, 82],
             zoneAxis: 'y',
             zones: [
-                { value: 60, color: '#ef4444' },   // <60% red
-                { value: 75, color: '#f59e0b' },   // 60-75% yellow
-                { color: '#22c55e' }               // >=75% green
+                { value: 60, color: '#dc3545' },   // <60% red
+                { value: 75, color: '#ffc107' },   // 60-75% yellow
+                { color: '#28a745' }               // >=75% green
             ]
         }],
         credits: { enabled: false },
@@ -1630,7 +1863,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Good (≥75%) - Green
             var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#22c55e' })
+                .attr({ fill: '#28a745' })
                 .add();
             var text1 = chart.renderer.text('Good (≥75%)', legendX + 20, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1639,7 +1872,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Average (60-75%) - Yellow
             var rect2 = chart.renderer.rect(legendX + 120, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#f59e0b' })
+                .attr({ fill: '#ffc107' })
                 .add();
             var text2 = chart.renderer.text('Average (60-75%)', legendX + 140, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1648,13 +1881,43 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Poor (<60%) - Red
             var rect3 = chart.renderer.rect(legendX + 280, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#ef4444' })
+                .attr({ fill: '#dc3545' })
                 .add();
             var text3 = chart.renderer.text('Poor (<60%)', legendX + 300, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
                 .add();
             chart.customLegend.push(rect3, text3);
         }
+    };
+
+    // Average Resolution Time by Social & Messaging Channel (Column, hours)
+    var avgResTimeBySocialData = [12, 15, 18, 20];
+    var socialChannelColors = ['#25d366', '#1877f2', '#ff0369', '#616161']; // WhatsApp, Messenger, Instagram, Web
+    $scope.avgResTimeBySocialMessagingChartConfig = {
+        chart: { 
+            type: 'column', 
+            backgroundColor: '#fff'
+        },
+        title: { text: null },
+        xAxis: { categories: ['WhatsApp', 'Messenger', 'Instagram', 'Web'] },
+        yAxis: { title: { text: 'Avg Resolution Time (h)' } },
+        plotOptions: {
+            column: {
+                dataLabels: { 
+                    enabled: true, 
+                    formatter: function(){ return this.y + 'h'; }, 
+                    style: { fontWeight: 'bold', fontSize: '11px' } 
+                }
+            }
+        },
+        series: [{ 
+            name: 'Avg Hours', 
+            data: avgResTimeBySocialData.map(function(value, index) {
+                return { y: value, color: socialChannelColors[index] };
+            })
+        }],
+        credits: { enabled: false },
+        legend: { enabled: false }
     };
 
     // Resolution Rate by Social and Messaging Channel (Column, %)
@@ -1687,9 +1950,9 @@ app.controller('DashboardController', function($scope, $http) {
             data: [82, 78, 74, 70],
             zoneAxis: 'y',
             zones: [
-                { value: 60, color: '#ef4444' },   // <60% red
-                { value: 75, color: '#f59e0b' },   // 60-75% yellow
-                { color: '#22c55e' }               // >=75% green
+                { value: 60, color: '#dc3545' },   // <60% red
+                { value: 75, color: '#ffc107' },   // 60-75% yellow
+                { color: '#28a745' }               // >=75% green
             ]
         }],
         credits: { enabled: false },
@@ -1712,7 +1975,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Good (≥75%) - Green
             var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#22c55e' })
+                .attr({ fill: '#28a745' })
                 .add();
             var text1 = chart.renderer.text('Good (≥75%)', legendX + 20, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1721,7 +1984,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Average (60-75%) - Yellow
             var rect2 = chart.renderer.rect(legendX + 120, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#f59e0b' })
+                .attr({ fill: '#ffc107' })
                 .add();
             var text2 = chart.renderer.text('Average (60-75%)', legendX + 140, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1730,13 +1993,43 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Poor (<60%) - Red
             var rect3 = chart.renderer.rect(legendX + 280, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#ef4444' })
+                .attr({ fill: '#dc3545' })
                 .add();
             var text3 = chart.renderer.text('Poor (<60%)', legendX + 300, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
                 .add();
             chart.customLegend.push(rect3, text3);
         }
+    };
+
+    // Average Resolution Time by Review Channel (Column, hours)
+    var avgResTimeByReviewData = [10, 12, 14];
+    var reviewChannelColors = ['#ea4335', '#1877f2', '#00AF87']; // Google, Facebook, TripAdvisor
+    $scope.avgResTimeByReviewChartConfig = {
+        chart: { 
+            type: 'column', 
+            backgroundColor: '#fff'
+        },
+        title: { text: null },
+        xAxis: { categories: ['Google', 'Facebook', 'TripAdvisor'] },
+        yAxis: { title: { text: 'Avg Resolution Time (h)' } },
+        plotOptions: {
+            column: {
+                dataLabels: { 
+                    enabled: true, 
+                    formatter: function(){ return this.y + 'h'; }, 
+                    style: { fontWeight: 'bold', fontSize: '11px' } 
+                }
+            }
+        },
+        series: [{ 
+            name: 'Avg Hours', 
+            data: avgResTimeByReviewData.map(function(value, index) {
+                return { y: value, color: reviewChannelColors[index] };
+            })
+        }],
+        credits: { enabled: false },
+        legend: { enabled: false }
     };
 
     // Resolution Rate by Review Channel (Column, %)
@@ -1769,9 +2062,9 @@ app.controller('DashboardController', function($scope, $http) {
             data: [85, 80, 75],
             zoneAxis: 'y',
             zones: [
-                { value: 60, color: '#ef4444' },   // <60% red
-                { value: 75, color: '#f59e0b' },   // 60-75% yellow
-                { color: '#22c55e' }               // >=75% green
+                { value: 60, color: '#dc3545' },   // <60% red
+                { value: 75, color: '#ffc107' },   // 60-75% yellow
+                { color: '#28a745' }               // >=75% green
             ]
         }],
         credits: { enabled: false },
@@ -1794,7 +2087,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Good (≥75%) - Green
             var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#22c55e' })
+                .attr({ fill: '#28a745' })
                 .add();
             var text1 = chart.renderer.text('Good (≥75%)', legendX + 20, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1803,7 +2096,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Average (60-75%) - Yellow
             var rect2 = chart.renderer.rect(legendX + 120, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#f59e0b' })
+                .attr({ fill: '#ffc107' })
                 .add();
             var text2 = chart.renderer.text('Average (60-75%)', legendX + 140, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1812,7 +2105,7 @@ app.controller('DashboardController', function($scope, $http) {
             
             // Poor (<60%) - Red
             var rect3 = chart.renderer.rect(legendX + 280, legendY - 8, 15, 10, 0)
-                .attr({ fill: '#ef4444' })
+                .attr({ fill: '#dc3545' })
                 .add();
             var text3 = chart.renderer.text('Poor (<60%)', legendX + 300, legendY)
                 .css({ fontSize: '12px', color: '#1F2937' })
@@ -1838,7 +2131,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#EF4444'],
+        colors: ['#dc3545'],
         series: [{
             name: 'Complaints',
             data: [245, 342, 289, 156, 215]
@@ -1872,7 +2165,7 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: true, radius: 5 }
             }
         },
-        colors: ['#EF4444'],
+        colors: ['#dc3545'],
         series: [{
             name: 'SLA Compliance',
             data: [82, 85, 87, 89]
@@ -1952,7 +2245,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#3b82f6'],
+        colors: ['#007abf'],
         series: [{ name: 'Resolved', data: [152, 140, 132, 118, 110] }],
         credits: { enabled: false },
         legend: { enabled: false }
@@ -2033,9 +2326,9 @@ app.controller('DashboardController', function($scope, $http) {
         series: [{
             name: 'Complaints',
             data: [
-                { name: 'Open', y: 342, color: (statusColors && statusColors.Open) || '#22c55e' },
-                { name: 'In Progress', y: 589, color: (statusColors && statusColors.InProgress) || '#f59e0b' },
-                { name: 'Resolved', y: 316, color: (statusColors && statusColors.Resolved) || '#3b82f6' }
+                { name: 'Open', y: 342, color: (statusColors && statusColors.Open) || '#28a745' },
+                { name: 'In Progress', y: 589, color: (statusColors && statusColors.InProgress) || '#ffc107' },
+                { name: 'Resolved', y: 316, color: (statusColors && statusColors.Resolved) || '#007abf' }
             ]
         }],
         credits: { enabled: false },
@@ -2067,7 +2360,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#EF4444', '#F59E0B'],
+        colors: ['#dc3545', '#ffc107'],
         series: [
             { name: 'Reopened', type: 'line', data: [42, 38, 35, 32] },
             { name: 'Escalated', type: 'line', data: [28, 25, 22, 20] }
@@ -2080,7 +2373,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.timeToFirstResponseChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey','Support','Voice','Social','Reviews'] },
+        xAxis: { categories: ['Survey','Support Form','Voice Calls','Social Channels','Review Channels'] },
         yAxis: { title: { text: 'Hours' } },
         plotOptions: getBarChartPlotOptions(),
         colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
@@ -2092,7 +2385,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.resolutionTimeDistributionChartConfig = {
         chart: { type: 'boxplot', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey','Support','Voice','Social','Reviews'] },
+        xAxis: { categories: ['Survey','Support Form','Voice Calls','Social Channels','Review Channels'] },
         yAxis: { title: { text: 'Hours' } },
         series: [{
             name: 'Resolution Time',
@@ -2140,7 +2433,7 @@ app.controller('DashboardController', function($scope, $http) {
                 dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.percentage:.1f}% ({point.y})' }
             }
         },
-        colors: ['#EF4444', '#F59E0B', '#10B981'],
+        colors: ['#dc3545', '#ffc107', '#10B981'],
         series: [{
             name: 'Sentiment',
             colorByPoint: true,
@@ -2169,7 +2462,75 @@ app.controller('DashboardController', function($scope, $http) {
         { name: 'late', weight: 28, sentiment: 'negative' },
         { name: 'helpful', weight: 26, sentiment: 'positive' },
         { name: 'resolved', weight: 24, sentiment: 'positive' },
-        { name: 'thanks', weight: 22, sentiment: 'positive' }
+        { name: 'thanks', weight: 22, sentiment: 'positive' },
+        { name: 'broken', weight: 55, sentiment: 'negative' },
+        { name: 'error', weight: 50, sentiment: 'negative' },
+        { name: 'missing', weight: 48, sentiment: 'negative' },
+        { name: 'wrong', weight: 46, sentiment: 'negative' },
+        { name: 'damaged', weight: 44, sentiment: 'negative' },
+        { name: 'slow', weight: 42, sentiment: 'negative' },
+        { name: 'poor', weight: 40, sentiment: 'negative' },
+        { name: 'issue', weight: 38, sentiment: 'neutral' },
+        { name: 'problem', weight: 36, sentiment: 'negative' },
+        { name: 'complaint', weight: 34, sentiment: 'negative' },
+        { name: 'service', weight: 32, sentiment: 'neutral' },
+        { name: 'customer', weight: 30, sentiment: 'neutral' },
+        { name: 'order', weight: 28, sentiment: 'neutral' },
+        { name: 'product', weight: 26, sentiment: 'neutral' },
+        { name: 'shipping', weight: 24, sentiment: 'neutral' },
+        { name: 'payment', weight: 22, sentiment: 'neutral' },
+        { name: 'account', weight: 20, sentiment: 'neutral' },
+        { name: 'excellent', weight: 25, sentiment: 'positive' },
+        { name: 'satisfied', weight: 23, sentiment: 'positive' },
+        { name: 'great', weight: 21, sentiment: 'positive' },
+        { name: 'good', weight: 19, sentiment: 'positive' },
+        { name: 'appreciate', weight: 17, sentiment: 'positive' },
+        { name: 'faulty', weight: 52, sentiment: 'negative' },
+        { name: 'unacceptable', weight: 49, sentiment: 'negative' },
+        { name: 'disappointed', weight: 47, sentiment: 'negative' },
+        { name: 'frustrated', weight: 45, sentiment: 'negative' },
+        { name: 'unresponsive', weight: 43, sentiment: 'negative' },
+        { name: 'incomplete', weight: 41, sentiment: 'negative' },
+        { name: 'incorrect', weight: 39, sentiment: 'negative' },
+        { name: 'unreliable', weight: 37, sentiment: 'negative' },
+        { name: 'unsatisfactory', weight: 35, sentiment: 'negative' },
+        { name: 'outstanding', weight: 27, sentiment: 'positive' },
+        { name: 'amazing', weight: 25, sentiment: 'positive' },
+        { name: 'fantastic', weight: 23, sentiment: 'positive' },
+        { name: 'wonderful', weight: 21, sentiment: 'positive' },
+        { name: 'professional', weight: 29, sentiment: 'positive' },
+        { name: 'efficient', weight: 27, sentiment: 'positive' },
+        { name: 'prompt', weight: 25, sentiment: 'positive' },
+        { name: 'reliable', weight: 23, sentiment: 'positive' },
+        { name: 'timely', weight: 21, sentiment: 'positive' },
+        { name: 'communication', weight: 33, sentiment: 'neutral' },
+        { name: 'update', weight: 31, sentiment: 'neutral' },
+        { name: 'status', weight: 29, sentiment: 'neutral' },
+        { name: 'tracking', weight: 27, sentiment: 'neutral' },
+        { name: 'invoice', weight: 25, sentiment: 'neutral' },
+        { name: 'receipt', weight: 23, sentiment: 'neutral' },
+        { name: 'package', weight: 21, sentiment: 'neutral' },
+        { name: 'return', weight: 19, sentiment: 'neutral' },
+        { name: 'exchange', weight: 17, sentiment: 'neutral' },
+        { name: 'warranty', weight: 15, sentiment: 'neutral' },
+        { name: 'refunded', weight: 53, sentiment: 'negative' },
+        { name: 'cancelled', weight: 51, sentiment: 'negative' },
+        { name: 'overcharged', weight: 49, sentiment: 'negative' },
+        { name: 'undelivered', weight: 47, sentiment: 'negative' },
+        { name: 'misleading', weight: 45, sentiment: 'negative' },
+        { name: 'deceptive', weight: 43, sentiment: 'negative' },
+        { name: 'unfair', weight: 41, sentiment: 'negative' },
+        { name: 'inconvenient', weight: 39, sentiment: 'negative' },
+        { name: 'unhelpful', weight: 37, sentiment: 'negative' },
+        { name: 'rude', weight: 35, sentiment: 'negative' },
+        { name: 'impolite', weight: 33, sentiment: 'negative' },
+        { name: 'satisfaction', weight: 28, sentiment: 'positive' },
+        { name: 'pleased', weight: 26, sentiment: 'positive' },
+        { name: 'content', weight: 24, sentiment: 'positive' },
+        { name: 'happy', weight: 22, sentiment: 'positive' },
+        { name: 'delighted', weight: 20, sentiment: 'positive' },
+        { name: 'thrilled', weight: 18, sentiment: 'positive' },
+        { name: 'recommend', weight: 16, sentiment: 'positive' }
     ];
     function getWordCloudData(filter) {
         if (!filter || filter === 'all') return wordCloudAll.map(function(w){ return { name: w.name, weight: w.weight }; });
@@ -2207,7 +2568,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#ef4444', '#f97316', '#3b82f6', '#9ca3af', '#10b981', '#84cc16'],
+        colors: ['#dc3545', '#f97316', '#007abf', '#9ca3af', '#10b981', '#84cc16'],
         series: [{
             name: 'Emotions',
             colorByPoint: true,
@@ -2222,7 +2583,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
         yAxis: { title: { text: 'Percentage' } },
-        colors: ['#EF4444', '#F59E0B', '#10B981'],
+        colors: ['#dc3545', '#ffc107', '#10B981'],
         series: [
             { name: 'Negative', data: [48, 45, 42, 44, 41, 40, 38, 39, 42, 40, 41, 42] },
             { name: 'Neutral', data: [32, 33, 34, 33, 35, 36, 37, 36, 35, 36, 35, 35] },
@@ -2250,7 +2611,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#EF4444', '#F59E0B', '#10B981'],
+        colors: ['#dc3545', '#ffc107', '#10B981'],
         series: [
             { name: 'Negative', data: [142, 118, 98, 78, 62] },
             { name: 'Neutral', data: [118, 98, 82, 65, 52] },
@@ -2266,7 +2627,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { categories: ['WhatsApp', 'Messenger', 'Instagram', 'Facebook', 'Twitter', 'TikTok'] },
         yAxis: { title: { text: 'Count' } },
-        colors: ['#10B981', '#F59E0B', '#EF4444'],
+        colors: ['#10B981', '#ffc107', '#dc3545'],
         series: [
             { name: 'Positive', data: [22,18,20,18,15,12] },
             { name: 'Neutral', data: [38,32,25,24,18,16] },
@@ -2281,7 +2642,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { categories: ['Google','Facebook','TripAdvisor','Trustpilot'] },
         yAxis: { title: { text: 'Count' } },
-        colors: ['#10B981', '#F59E0B', '#EF4444'],
+        colors: ['#10B981', '#ffc107', '#dc3545'],
         series: [
             { name: 'Positive', data: [65,52,28,18] },
             { name: 'Neutral', data: [70,56,30,22] },
@@ -2292,9 +2653,9 @@ app.controller('DashboardController', function($scope, $http) {
 
     // Keyword Colors (shared with Top Categories where applicable)
     var keywordColors = {
-        refund: '#ef4444',
-        delay: '#f59e0b',
-        quality: '#3b82f6',
+        refund: '#dc3545',
+        delay: '#ffc107',
+        quality: '#007abf',
         billing: '#10b981',
         delivery: '#8b5cf6'
     };
@@ -2364,24 +2725,45 @@ app.controller('DashboardController', function($scope, $http) {
     // SECTION 6: Timeline & Insights
     // ============================================
     
-    // Complaint Open vs Resolved Timeline
-    $scope.timelineChartConfig = {
+    // Complaint Status Timeline (daily/monthly toggle)
+    $scope.timelineChartType = 'daily';
+    var timelineDailyData = {
+        open: [85, 92, 88, 95, 98, 102, 105, 98, 112, 108, 115, 118, 120, 125],
+        inProgress: [145, 152, 148, 155, 158, 162, 165, 158, 172, 168, 175, 178, 180, 185],
+        resolved: [72, 78, 75, 82, 85, 88, 90, 85, 95, 92, 98, 102, 105, 108]
+    };
+    var timelineMonthlyData = {
+        open: [2850, 2920, 2880, 2950, 2980, 3020, 3050, 2980, 3120, 3080, 3150, 3180],
+        inProgress: [4450, 4520, 4480, 4550, 4580, 4620, 4650, 4580, 4720, 4680, 4750, 4780],
+        resolved: [2720, 2780, 2750, 2820, 2850, 2880, 2900, 2850, 2950, 2920, 2980, 3020]
+    };
+    function getTimelineConfig(type) {
+        var categories = type === 'daily' ? dailyDates : monthlyDates;
+        var data = type === 'daily' ? timelineDailyData : timelineMonthlyData;
+        return {
         chart: { type: 'line', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: dailyDates },
+            xAxis: { categories: categories },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             line: {
                 marker: { enabled: true, radius: 3 }
             }
         },
-        colors: [statusColors.Open, statusColors.Resolved],
+        colors: [statusColors.Open, statusColors.InProgress, statusColors.Resolved],
         series: [
-            { name: 'Open', data: [85, 92, 88, 95, 98, 102, 105, 98, 112, 108, 115, 118, 120, 125] },
-            { name: 'Resolved', data: [72, 78, 75, 82, 85, 88, 90, 85, 95, 92, 98, 102, 105, 108] }
+                { name: 'Open', data: data.open },
+                { name: 'In Progress', data: data.inProgress },
+                { name: 'Resolved', data: data.resolved }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
+        };
+    }
+    $scope.timelineChartConfig = getTimelineConfig($scope.timelineChartType);
+    $scope.switchTimeline = function(type) {
+        $scope.timelineChartType = type;
+        $scope.timelineChartConfig = getTimelineConfig(type);
     };
     
     // Complaint Volume Heatmap - Day of Week and Hour
@@ -2412,11 +2794,29 @@ app.controller('DashboardController', function($scope, $http) {
         credits: { enabled: false }
     };
 
-    // Complaint Lifecycle Duration Trend by Source
-    $scope.lifecycleDurationTrendChartConfig = {
+    // Complaint Lifecycle Duration Trend (daily/monthly toggle)
+    $scope.lifecycleDurationTrendType = 'daily';
+    var lifecycleDailyData = {
+        survey: [12, 11.8, 11.5, 11.2, 11, 10.8, 10.5, 10.2, 10, 9.8, 9.5, 9.2, 9, 8.8],
+        support: [18, 17.8, 17.5, 17.2, 17, 16.8, 16.5, 16.2, 16, 15.8, 15.5, 15.2, 15, 14.8],
+        voice: [24, 23.5, 23, 22.5, 22, 21.5, 21, 20.5, 20, 19.5, 19, 18.5, 18, 17.5],
+        social: [15, 14.8, 14.5, 14.2, 14, 13.8, 13.5, 13.2, 13, 12.8, 12.5, 12.2, 12, 11.8],
+        review: [10, 9.8, 9.5, 9.2, 9, 8.8, 8.5, 8.2, 8, 7.8, 7.5, 7.2, 7, 6.8]
+    };
+    var lifecycleMonthlyData = {
+        survey: [12, 11.5, 11, 10.5, 10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5],
+        support: [18, 17, 16.5, 16, 15.5, 15, 14.5, 14, 13.5, 13, 12.5, 12],
+        voice: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13],
+        social: [15, 14.5, 14, 13.5, 13, 12.5, 12, 11.5, 11, 10.5, 10, 9.5],
+        review: [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5]
+    };
+    function getLifecycleDurationTrendConfig(type) {
+        var categories = type === 'daily' ? dailyDates : monthlyDates;
+        var data = type === 'daily' ? lifecycleDailyData : lifecycleMonthlyData;
+        return {
         chart: { type: 'line', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Week 1','Week 2','Week 3','Week 4','Week 5'] },
+            xAxis: { categories: categories },
         yAxis: { title: { text: 'Hours (Avg)' } },
         plotOptions: {
             line: {
@@ -2425,40 +2825,168 @@ app.controller('DashboardController', function($scope, $http) {
         },
         colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
         series: [
-            { name: 'Survey', data: [12, 11.5, 11, 10.5, 10] },
-            { name: 'Support', data: [18, 17, 16.5, 16, 15.5] },
-            { name: 'Voice', data: [24, 23, 22, 21, 20] },
-            { name: 'Social', data: [15, 14.5, 14, 13.5, 13] },
-            { name: 'Reviews', data: [10, 9.5, 9, 8.5, 8] }
+                { name: 'Survey', data: data.survey },
+                { name: 'Support Form', data: data.support },
+                { name: 'Voice Calls', data: data.voice },
+                { name: 'Social Channels', data: data.social },
+                { name: 'Review Channels', data: data.review }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
+        };
+    }
+    $scope.lifecycleDurationTrendChartConfig = getLifecycleDurationTrendConfig($scope.lifecycleDurationTrendType);
+    $scope.switchLifecycleDurationTrend = function(type) {
+        $scope.lifecycleDurationTrendType = type;
+        $scope.lifecycleDurationTrendChartConfig = getLifecycleDurationTrendConfig(type);
+    };
+
+    // Slowest-Resolving Locations (Bar - All Locations)
+    var slowestLocationsData = [13.6, 13.0, 12.4, 11.8, 11.2, 10.8, 10.2, 9.6, 9.1, 8.4];
+    var slowestLocationsAvg = slowestLocationsData.reduce(function(a, b) { return a + b; }, 0) / slowestLocationsData.length;
+    $scope.slowestResolvingLocationsChartConfig = {
+        chart: { 
+            type: 'bar', 
+            backgroundColor: '#fff',
+            spacingBottom: 60
+        },
+        title: { text: null },
+        xAxis: { categories: ['Badulla', 'Ratnapura', 'Anuradhapura', 'Jaffna', 'Matara', 'Kurunegala', 'Galle', 'Kandy', 'Gampaha', 'Colombo'] },
+        yAxis: { title: { text: 'Avg Resolution Time (h)' } },
+        plotOptions: getBarChartPlotOptions(),
+        series: [{ 
+            name: 'Avg Hours', 
+            data: slowestLocationsData.map(function(value, idx) {
+                var color;
+                if (value >= slowestLocationsAvg * 1.1) {
+                    color = '#dc3545'; // Red for worst (above 110% of average)
+                } else if (value <= slowestLocationsAvg * 0.9) {
+                    color = '#28a745'; // Green for best (below 90% of average)
+                } else {
+                    color = '#ffc107'; // Yellow for average (90-110% of average)
+                }
+                return { y: value, color: color };
+            })
+        }],
+        credits: { enabled: false },
+        legend: { enabled: false }
+    };
+    
+    // Add custom legend for Slowest-Resolving Locations
+    $scope.slowestResolvingLocationsChartConfig.chart.events = {
+        load: function() {
+            var chart = this;
+            var legendY = chart.chartHeight - 20;
+            var legendX = chart.chartWidth / 2 - 140;
+            
+            if (chart.customLegend) {
+                chart.customLegend.forEach(function(elem) { 
+                    if (elem && elem.destroy) elem.destroy(); 
+                });
+            }
+            chart.customLegend = [];
+            
+            // Worst (≥110% of avg) - Red
+            var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#dc3545' })
+                .add();
+            var text1 = chart.renderer.text('Worst (≥110% of avg)', legendX + 20, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect1, text1);
+            
+            // Average (90-110% of avg) - Yellow
+            var rect2 = chart.renderer.rect(legendX + 160, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#ffc107' })
+                .add();
+            var text2 = chart.renderer.text('Average (90-110%)', legendX + 180, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect2, text2);
+            
+            // Best (≤90% of avg) - Green
+            var rect3 = chart.renderer.rect(legendX + 320, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#28a745' })
+                .add();
+            var text3 = chart.renderer.text('Best (≤90% of avg)', legendX + 340, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect3, text3);
+        }
     };
 
     // Slowest-Resolving Categories (Bar - All Categories)
+    var slowestCategoriesData = [28, 24, 22, 21, 20, 18, 16, 14];
+    var slowestCategoriesAvg = slowestCategoriesData.reduce(function(a, b) { return a + b; }, 0) / slowestCategoriesData.length;
     $scope.slowestResolvingCategoriesChartConfig = {
-        chart: { type: 'bar', backgroundColor: '#fff' },
+        chart: { 
+            type: 'bar', 
+            backgroundColor: '#fff',
+            spacingBottom: 60
+        },
         title: { text: null },
         xAxis: { categories: ['Product Quality', 'Billing', 'Service', 'Technical', 'Shipping', 'Order', 'Account', 'Other'] },
         yAxis: { title: { text: 'Avg Resolution Time (h)' } },
         plotOptions: getBarChartPlotOptions(),
-        colors: ['#ef4444'],
-        series: [{ name: 'Avg Hours', data: [28, 24, 22, 21, 20, 18, 16, 14] }],
+        series: [{ 
+            name: 'Avg Hours', 
+            data: slowestCategoriesData.map(function(value, idx) {
+                var color;
+                if (value >= slowestCategoriesAvg * 1.1) {
+                    color = '#dc3545'; // Red for worst (above 110% of average)
+                } else if (value <= slowestCategoriesAvg * 0.9) {
+                    color = '#28a745'; // Green for best (below 90% of average)
+                } else {
+                    color = '#ffc107'; // Yellow for average (90-110% of average)
+                }
+                return { y: value, color: color };
+            })
+        }],
         credits: { enabled: false },
         legend: { enabled: false }
     };
-
-    // Fastest-Resolving Locations (Bar - All Locations)
-    $scope.fastestResolvingLocationsChartConfig = {
-        chart: { type: 'bar', backgroundColor: '#fff' },
-        title: { text: null },
-        xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala', 'Matara', 'Jaffna', 'Anuradhapura', 'Ratnapura', 'Badulla'] },
-        yAxis: { title: { text: 'Avg Resolution Time (h)' } },
-        plotOptions: getBarChartPlotOptions(),
-        colors: ['#10B981'],
-        series: [{ name: 'Avg Hours', data: [8.4, 9.1, 9.6, 10.2, 10.8, 11.2, 11.8, 12.4, 13.0, 13.6] }],
-        credits: { enabled: false },
-        legend: { enabled: false }
+    
+    // Add custom legend for Slowest-Resolving Categories
+    $scope.slowestResolvingCategoriesChartConfig.chart.events = {
+        load: function() {
+            var chart = this;
+            var legendY = chart.chartHeight - 20;
+            var legendX = chart.chartWidth / 2 - 140;
+            
+            if (chart.customLegend) {
+                chart.customLegend.forEach(function(elem) { 
+                    if (elem && elem.destroy) elem.destroy(); 
+                });
+            }
+            chart.customLegend = [];
+            
+            // Worst (≥110% of avg) - Red
+            var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#dc3545' })
+                .add();
+            var text1 = chart.renderer.text('Worst (≥110% of avg)', legendX + 20, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect1, text1);
+            
+            // Average (90-110% of avg) - Yellow
+            var rect2 = chart.renderer.rect(legendX + 160, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#ffc107' })
+                .add();
+            var text2 = chart.renderer.text('Average (90-110%)', legendX + 180, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect2, text2);
+            
+            // Best (≤90% of avg) - Green
+            var rect3 = chart.renderer.rect(legendX + 320, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#28a745' })
+                .add();
+            var text3 = chart.renderer.text('Best (≤90% of avg)', legendX + 340, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect3, text3);
+        }
     };
 
     // Complaint Closure Rate (Line, %)
@@ -2484,39 +3012,233 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: true, radius: 4 } 
             }
         },
-        colors: ['#3B82F6'],
+        colors: ['#007abf'],
         series: [{ name: 'Closure %', data: [68, 70, 72, 71, 73, 75, 76, 77, 78, 79, 80, 82] }],
         credits: { enabled: false },
         legend: { enabled: false }
     };
 
-    // First-Contact Resolution Rate (FCR) Over Time
-    // Estimated weekly totals: [250, 260, 270, 280, 290]
-    var fcrWeeklyTotals = [250, 260, 270, 280, 290];
-    $scope.firstContactResolutionRateChartConfig = {
-        chart: { type: 'column', backgroundColor: '#fff' },
-        title: { text: null },
-        xAxis: { categories: ['Week 1','Week 2','Week 3','Week 4','Week 5'] },
-        yAxis: { title: { text: 'FCR %' }, max: 100 },
+    // SLA Breach Rate Over Time (Line Chart)
+    // Shows the percentage of complaints that exceeded their SLA resolution timelines over time
+    var slaBreachRateData = [18, 15, 22, 12, 10, 8, 9, 7, 11, 10, 9, 6];
+    var slaTargetValue = 10;
+    
+    $scope.performanceMeterChartConfig = {
+        chart: {
+            type: 'line',
+            backgroundColor: '#fff',
+            fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+        },
+        title: {
+            text: null
+        },
+        xAxis: {
+            categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            labels: {
+                style: {
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '12px',
+                    color: '#1F2937'
+                }
+            },
+            gridLineColor: '#E5E7EB',
+            lineColor: '#E5E7EB'
+        },
+        yAxis: {
+            title: {
+                text: 'SLA Breach Rate (%)',
+                style: {
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '12px',
+                    color: '#1F2937'
+                }
+            },
+            min: 0,
+            max: 30,
+            labels: {
+                format: '{value}%',
+                    style: {
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '12px',
+                    color: '#1F2937'
+                }
+            },
+            gridLineColor: '#E5E7EB',
+            plotLines: [{
+                value: slaTargetValue,
+                color: '#9CA3AF',
+                dashStyle: 'Dash',
+                width: 2,
+                zIndex: 5,
+                label: {
+                    text: 'SLA Target',
+                    align: 'right',
+                    x: -5,
+                    style: {
+                        fontFamily: 'Inter, sans-serif',
+                        fontSize: '11px',
+                        color: '#6B7280',
+                        fontWeight: '500'
+                    }
+                }
+            }]
+        },
+            tooltip: {
+            formatter: function() {
+                var monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                                 'July', 'August', 'September', 'October', 'November', 'December'];
+                var monthName = monthNames[this.x];
+                return '<b>' + monthName + '</b> – ' + this.y + '%';
+            },
+                style: {
+                fontFamily: 'Inter, sans-serif',
+                fontSize: '12px'
+            }
+        },
         plotOptions: {
-            column: {
-                dataLabels: {
+            line: {
+                lineWidth: 3,
+                marker: {
                     enabled: true,
-                    align: 'center',
-                    verticalAlign: 'top',
-                    style: { fontWeight: 'bold', fontSize: '11px' },
-                    formatter: function() {
-                        var idx = this.x;
-                        var total = fcrWeeklyTotals[idx] || 0;
-                        var count = Math.round(total * this.y / 100);
-                        return this.y + '% (' + count + ')';
+                    radius: 5,
+                    lineWidth: 2
+                },
+                states: {
+                    hover: {
+                        lineWidth: 4,
+                        marker: {
+                            radius: 7
+                        }
                     }
                 }
             }
         },
-        colors: ['#10B981'],
-        series: [{ name: 'FCR %', data: [62, 65, 67, 70, 72] }],
-        credits: { enabled: false }
+        series: [{ 
+            name: 'SLA Breach Rate',
+            data: slaBreachRateData.map(function(value) {
+                return {
+                    y: value,
+                    color: value > slaTargetValue ? '#dc3545' : '#28a745',
+                    marker: {
+                        fillColor: value > slaTargetValue ? '#dc3545' : '#28a745',
+                        lineColor: value > slaTargetValue ? '#dc3545' : '#28a745'
+                    }
+                };
+            }),
+            zoneAxis: 'y',
+            zones: [
+                { value: slaTargetValue, color: '#28a745' },  // Below target - green
+                { color: '#dc3545' }                          // Above target - red
+            ],
+            marker: {
+                enabled: true,
+                radius: 5,
+                lineWidth: 2
+            }
+        }],
+        credits: { enabled: false },
+        legend: {
+            enabled: false
+        }
+    };
+
+    // First-Contact Resolution Rate (FCR) Over Time - for Timeline & Insights (daily/monthly toggle)
+    $scope.firstContactResolutionRateType = 'daily';
+    var fcrDailyData = {
+        totals: [45, 48, 52, 50, 55, 58, 60, 57, 62, 59, 65, 68, 70, 72],
+        rates: [62, 63, 64, 65, 66, 67, 68, 67, 69, 70, 71, 72, 73, 74]
+    };
+    var fcrMonthlyData = {
+        totals: [1450, 1520, 1580, 1650, 1720, 1780, 1850, 1920, 1980, 2050, 2120, 2180],
+        rates: [62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73]
+    };
+    function getFirstContactResolutionRateConfig(type) {
+        var categories = type === 'daily' ? dailyDates : monthlyDates;
+        var data = type === 'daily' ? fcrDailyData : fcrMonthlyData;
+        return {
+            chart: { 
+                type: 'column', 
+                backgroundColor: '#fff',
+                spacingBottom: 60,
+                events: {
+        load: function() {
+            var chart = this;
+            var legendY = chart.chartHeight - 20;
+            var legendX = chart.chartWidth / 2 - 140;
+            
+            if (chart.customLegend) {
+                chart.customLegend.forEach(function(elem) { 
+                    if (elem && elem.destroy) elem.destroy(); 
+                });
+            }
+            chart.customLegend = [];
+            
+            // Poor (<60%) - Red
+            var rect1 = chart.renderer.rect(legendX, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#dc3545' })
+                .add();
+            var text1 = chart.renderer.text('Poor (<60%)', legendX + 20, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect1, text1);
+            
+            // Average (60-75%) - Yellow
+            var rect2 = chart.renderer.rect(legendX + 120, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#ffc107' })
+                .add();
+            var text2 = chart.renderer.text('Average (60-75%)', legendX + 140, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect2, text2);
+            
+            // Good (≥75%) - Green
+            var rect3 = chart.renderer.rect(legendX + 280, legendY - 8, 15, 10, 0)
+                .attr({ fill: '#28a745' })
+                .add();
+            var text3 = chart.renderer.text('Good (≥75%)', legendX + 300, legendY)
+                .css({ fontSize: '12px', color: '#1F2937' })
+                .add();
+            chart.customLegend.push(rect3, text3);
+        }
+                }
+            },
+            title: { text: null },
+            xAxis: { categories: categories },
+            yAxis: { title: { text: 'FCR %' }, max: 100, labels: { format: '{value}%' } },
+            plotOptions: {
+                column: {
+                    dataLabels: {
+                        enabled: true,
+                        align: 'center',
+                        verticalAlign: 'top',
+                        style: { fontWeight: 'bold', fontSize: '11px' },
+                        formatter: function() {
+                            var idx = this.x;
+                            var total = data.totals[idx] || 0;
+                            var count = Math.round(total * this.y / 100);
+                            return this.y + '% (' + count + ')';
+                        }
+                    }
+                }
+            },
+            series: [{ 
+                name: 'FCR %', 
+                data: data.rates,
+                zoneAxis: 'y',
+                zones: [
+                    { value: 60, color: '#dc3545' },   // <60% red
+                    { value: 75, color: '#ffc107' },   // 60-75% yellow
+                    { color: '#28a745' }               // >=75% green
+                ]
+            }],
+            credits: { enabled: false },
+            legend: { enabled: false }
+        };
+    }
+    $scope.firstContactResolutionRateChartConfig = getFirstContactResolutionRateConfig($scope.firstContactResolutionRateType);
+    $scope.switchFirstContactResolutionRate = function(type) {
+        $scope.firstContactResolutionRateType = type;
+        $scope.firstContactResolutionRateChartConfig = getFirstContactResolutionRateConfig(type);
     };
     
     // ============================================
@@ -2529,7 +3251,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] },
         yAxis: { title: { text: 'Complaints' } },
-        colors: ['#F97316', '#EF4444'],
+        colors: ['#F97316', '#dc3545'],
         series: [
             { name: 'Actual', data: [850, 920, 980, 1050, 1100, 1180, 1200, 1150, 1220, 1190, 1247, null], type: 'line', marker: { enabled: true } },
             { name: 'Predicted', data: [null, null, null, null, null, null, null, null, null, null, null, 1380], type: 'line', dashStyle: 'dash', marker: { enabled: true } }
@@ -2544,7 +3266,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { title: { text: 'Time' }, categories: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'] },
         yAxis: { title: { text: 'Complaint Count' } },
-        colors: ['#F97316', '#EF4444'],
+        colors: ['#F97316', '#dc3545'],
         series: [
             { name: 'Normal', data: [[0, 85], [1, 92], [2, 88], [3, 95], [4, 98], [5, 72], [6, 68]] },
             { name: 'Anomaly', data: [[3, 145], [5, 128]] }
@@ -2571,7 +3293,7 @@ app.controller('DashboardController', function($scope, $http) {
         xAxis: { categories: ['Colombo', 'Gampaha', 'Kandy'] },
         yAxis: { title: { text: 'Avg Resolution Hours' } },
         plotOptions: getBarChartPlotOptions(),
-        series: [{ name: 'Avg Hours', data: [18, 14, 12], color: '#ef4444' }],
+        series: [{ name: 'Avg Hours', data: [18, 14, 12], color: '#dc3545' }],
         credits: { enabled: false }
     };
 
@@ -2593,7 +3315,7 @@ app.controller('DashboardController', function($scope, $http) {
         xAxis: { categories: ['Delivery Delays', 'App Login Issues', 'Refund Wait'] },
         yAxis: { title: { text: 'WoW Increase %' }, max: 100 },
         plotOptions: getBarChartPlotOptions(),
-        series: [{ name: 'WoW %', data: [12, 9, 7], color: '#f59e0b' }],
+        series: [{ name: 'WoW %', data: [12, 9, 7], color: '#ffc107' }],
         credits: { enabled: false }
     };
 
@@ -2603,7 +3325,7 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         xAxis: { categories: ['Next Month'] },
         yAxis: { title: { text: 'Predicted Complaints' } },
-        series: [{ name: 'Forecast', data: [1380], color: '#3b82f6' }],
+        series: [{ name: 'Forecast', data: [1380], color: '#007abf' }],
         dataLabels: { enabled: false },
         credits: { enabled: false }
     };
@@ -2614,8 +3336,8 @@ app.controller('DashboardController', function($scope, $http) {
         title: { text: null },
         plotOptions: { pie: { innerSize: '40%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b>: {point.percentage:.0f}% ({point.y})' } } },
         series: [{ name: 'Share', data: [
-            { name: 'Negative', y: 52, color: '#ef4444' },
-            { name: 'Neutral', y: 31, color: '#f59e0b' },
+            { name: 'Negative', y: 52, color: '#dc3545' },
+            { name: 'Neutral', y: 31, color: '#ffc107' },
             { name: 'Positive', y: 17, color: '#10b981' }
         ] }],
         credits: { enabled: false }
