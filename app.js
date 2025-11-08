@@ -2786,7 +2786,7 @@ app.controller('DashboardController', function($scope, $http) {
                 }
             }
         },
-        colors: ['#0EA5E9'],
+        colors: ['#007abf'],
         series: [{
             name: 'Repeats',
             data: [45, 38, 32, 28, 25]
@@ -3211,6 +3211,7 @@ app.controller('DashboardController', function($scope, $http) {
                         enabled: true,
                         align: 'center',
                         verticalAlign: 'top',
+                        y: -5,
                         style: { fontWeight: 'bold', fontSize: '11px' },
                         formatter: function() {
                             var idx = this.x;
