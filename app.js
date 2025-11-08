@@ -255,6 +255,12 @@ app.controller('DashboardController', function($scope, $http) {
                     borderWidth: 0,
                     dataLabels: {
                         enabled: true,
+                        align: 'center',
+                        verticalAlign: 'top',
+                        inside: false,
+                        y: -20,
+                        crop: false,
+                        overflow: 'allow',
                         style: { fontWeight: 'bold', fontSize: '11px' },
                         formatter: function() { return this.y; }
                     }
@@ -315,7 +321,21 @@ app.controller('DashboardController', function($scope, $http) {
             title: { text: null },
             xAxis: { categories: ['Open', 'In Progress', 'Resolved'] },
             yAxis: { title: { text: 'Count' } },
-            plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' }, formatter: function(){ return this.y; } } } },
+            plotOptions: { 
+                column: { 
+                    dataLabels: { 
+                        enabled: true, 
+                        align: 'center',
+                        verticalAlign: 'top',
+                        inside: false,
+                        y: -20,
+                        crop: false,
+                        overflow: 'allow',
+                        style: { fontWeight: 'bold', fontSize: '11px' }, 
+                        formatter: function(){ return this.y; } 
+                    } 
+                } 
+            },
             series: [{
                 name: 'Complaints',
                 colorByPoint: false,
@@ -341,13 +361,19 @@ app.controller('DashboardController', function($scope, $http) {
         if (type === 'bar') {
             return {
                 chart: { type: 'column', backgroundColor: '#fff' },
-        title: { text: null },
+                title: { text: null },
                 xAxis: { categories: [''] },
                 yAxis: { title: { text: 'Count' } },
                 plotOptions: { 
                     column: { 
                         dataLabels: { 
                             enabled: true, 
+                            align: 'center',
+                            verticalAlign: 'top',
+                            inside: false,
+                            y: -20,
+                            crop: false,
+                            overflow: 'allow',
                             style: { fontWeight: 'bold', fontSize: '11px' },
                             formatter: function() { return this.y; }
                         } 
@@ -388,16 +414,30 @@ app.controller('DashboardController', function($scope, $http) {
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             column: {
-                dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } },
-                grouping: false
+                stacking: 'normal',
+                dataLabels: { 
+                    enabled: true,
+                    align: 'center',
+                    verticalAlign: 'middle',
+                    inside: true,
+                    style: { 
+                        fontWeight: 'bold', 
+                        fontSize: '11px',
+                        color: '#ffffff',
+                        textOutline: '1px contrast'
+                    },
+                    formatter: function() { return this.y; }
+                }
             }
         },
+        colors: [priorityColors.High, priorityColors.Medium, priorityColors.Low],
         series: [
             { name: 'High', data: [156, 234, 133], color: priorityColors.High },
             { name: 'Medium', data: [132, 289, 48], color: priorityColors.Medium },
             { name: 'Low', data: [54, 66, 135], color: priorityColors.Low }
         ],
-        credits: { enabled: false }
+        credits: { enabled: false },
+        legend: { enabled: true }
     };
     
     // Complaint Volume by Day & Hour - Heatmap
@@ -489,7 +529,21 @@ app.controller('DashboardController', function($scope, $http) {
             title: { text: null },
             xAxis: { categories: [''] },
             yAxis: { title: { text: 'Complaints per 1,000 Interactions' } },
-            plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' }, formatter: function(){ return this.y; } } } },
+            plotOptions: { 
+                column: { 
+                    dataLabels: { 
+                        enabled: true, 
+                        align: 'center',
+                        verticalAlign: 'top',
+                        inside: false,
+                        y: -20,
+                        crop: false,
+                        overflow: 'allow',
+                        style: { fontWeight: 'bold', fontSize: '11px' }, 
+                        formatter: function(){ return this.y; } 
+                    } 
+                } 
+            },
             series: data.map(function(item) {
                 return { name: item.name, data: [item.y], color: item.color };
             }),
@@ -519,6 +573,10 @@ app.controller('DashboardController', function($scope, $http) {
                     enabled: true,
                     align: 'center',
                     verticalAlign: 'top',
+                    inside: false,
+                    y: -20,
+                    crop: false,
+                    overflow: 'allow',
                     style: { fontWeight: 'bold', fontSize: '10px' },
                     formatter: function() { return this.y; }
                 }
@@ -602,6 +660,7 @@ app.controller('DashboardController', function($scope, $http) {
                 type: 'line',
                 yAxis: 0,
                 data: [16, 16, 16, 16, 16],
+                color: '#ff0000',
                 marker: { enabled: true }
             }
         ],
@@ -648,7 +707,21 @@ app.controller('DashboardController', function($scope, $http) {
                 title: { text: null },
                 xAxis: { categories: data.map(function(d){return d.name;}) },
                 yAxis: { title: { text: 'Complaints' } },
-                plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
+                plotOptions: { 
+                    column: { 
+                        dataLabels: { 
+                            enabled: true, 
+                            align: 'center',
+                            verticalAlign: 'top',
+                            inside: false,
+                            y: -20,
+                            crop: false,
+                            overflow: 'allow',
+                            style: { fontWeight: 'bold', fontSize: '11px' },
+                            formatter: function() { return this.y; }
+                        } 
+                    } 
+                },
                 series: [{ name: 'Complaints', data: data.map(function(d){return { y: d.y, color: d.color }; }) }],
                 credits: { enabled: false }
             };
@@ -690,7 +763,21 @@ app.controller('DashboardController', function($scope, $http) {
             title: { text: null },
             xAxis: { categories: [''] },
             yAxis: { title: { text: 'Complaints' } },
-            plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
+            plotOptions: { 
+                column: { 
+                    dataLabels: { 
+                        enabled: true, 
+                        align: 'center',
+                        verticalAlign: 'top',
+                        inside: false,
+                        y: -20,
+                        crop: false,
+                        overflow: 'allow',
+                        style: { fontWeight: 'bold', fontSize: '11px' },
+                        formatter: function() { return this.y; }
+                    } 
+                } 
+            },
             series: data.map(function(item) {
                 return { name: item.name, data: [item.y], color: item.color };
             }),
@@ -715,6 +802,10 @@ app.controller('DashboardController', function($scope, $http) {
                     enabled: true,
                     align: 'center',
                     verticalAlign: 'top',
+                    inside: false,
+                    y: -20,
+                    crop: false,
+                    overflow: 'allow',
                     style: { fontWeight: 'bold', fontSize: '10px' },
                     formatter: function() { return this.y; }
                 }
@@ -824,7 +915,21 @@ app.controller('DashboardController', function($scope, $http) {
                 title: { text: null },
                 xAxis: { categories: [''] },
                 yAxis: { title: { text: 'Complaints' } },
-                plotOptions: { column: { dataLabels: { enabled: true, style: { fontWeight: 'bold', fontSize: '11px' } } } },
+                plotOptions: { 
+                    column: { 
+                        dataLabels: { 
+                            enabled: true, 
+                            align: 'center',
+                            verticalAlign: 'top',
+                            inside: false,
+                            y: -20,
+                            crop: false,
+                            overflow: 'allow',
+                            style: { fontWeight: 'bold', fontSize: '11px' },
+                            formatter: function() { return this.y; }
+                        } 
+                    } 
+                },
                 series: data.map(function(item) {
                     return { name: item.name, data: [item.y], color: item.color };
                 }),
@@ -861,6 +966,10 @@ app.controller('DashboardController', function($scope, $http) {
                     enabled: true,
                     align: 'center',
                     verticalAlign: 'top',
+                    inside: false,
+                    y: -20,
+                    crop: false,
+                    overflow: 'allow',
                     style: { fontWeight: 'bold', fontSize: '10px' },
                     formatter: function() { return this.y; }
                 }
@@ -1660,6 +1769,10 @@ app.controller('DashboardController', function($scope, $http) {
                     enabled: true,
                     align: 'center',
                     verticalAlign: 'top',
+                    inside: false,
+                    y: -20,
+                    crop: false,
+                    overflow: 'allow',
                     style: { fontWeight: 'bold', fontSize: '11px' },
                     formatter: function() { return this.y + 'h'; }
                 }
@@ -1692,8 +1805,12 @@ app.controller('DashboardController', function($scope, $http) {
                         colorByPoint: false,
                         dataLabels: {
                             enabled: true,
-                            align: 'left',
-                            verticalAlign: 'middle',
+                            align: 'center',
+                            verticalAlign: 'top',
+                            inside: false,
+                            y: -20,
+                            crop: false,
+                            overflow: 'allow',
                             style: { fontWeight: 'bold', fontSize: '11px' },
                             formatter: function() { return this.y; }
                         }
@@ -3211,7 +3328,10 @@ app.controller('DashboardController', function($scope, $http) {
                         enabled: true,
                         align: 'center',
                         verticalAlign: 'top',
-                        y: -5,
+                        inside: false,
+                        y: -20,
+                        crop: false,
+                        overflow: 'allow',
                         style: { fontWeight: 'bold', fontSize: '11px' },
                         formatter: function() {
                             var idx = this.x;
