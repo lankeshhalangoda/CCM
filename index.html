@@ -18,46 +18,26 @@
     
     <!-- Styles -->
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 </head>
 <body ng-controller="DashboardController" ng-click="closeAllMenus($event)">
-    <!-- Fixed Header -->
-    <div class="dashboard-header">
-        <div class="header-row header-top" ng-click="$event.stopPropagation()">
-            <button class="hamburger-button" title="Menu" aria-label="Open menu" ng-click="toggleSidebar()">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <rect x="0.75" y="0.75" width="22.5" height="22.5" rx="6" stroke="#337ab7" stroke-width="2"/>
-                    <path d="M7 9h10M7 12h10M7 15h10" stroke="#337ab7" stroke-width="2.2" stroke-linecap="round"/>
-                </svg>
-            </button>
-            <div class="header-title">Unified Complaint Management</div>
-            <div class="header-spacer"></div>
-            <div class="account-area">
-                <span class="account-label">Account</span>
-                <select class="account-select" ng-model="selectedAccount">
-                    <option selected>Lankesh</option>
-                </select>
-            </div>
-            <div class="header-logo" title="Unified Dashboard" aria-label="Unified Dashboard">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M3 12a9 9 0 1118 0 9 9 0 01-18 0zm4-1h10v2H7v-2zm2-4h6v2H9V7zm0 8h6v2H9v-2z" fill="#337ab7"/>
-                </svg>
+    <!-- Filter Bar -->
+    <div class="filter-bar" ng-click="$event.stopPropagation()">
+        <div class="filters-applied" aria-label="Applied filters">
+            <span class="filters-label">Filters:</span>
+            <div class="filter-badges">
+                <span class="filter-badge"><span class="badge-key">Sources:</span> Social, Survey</span>
+                <span class="filter-badge"><span class="badge-key">Sentiment:</span> All</span>
+                <span class="filter-badge"><span class="badge-key">Countries:</span> All</span>
             </div>
         </div>
-        <div class="header-row header-filters" ng-click="$event.stopPropagation()">
-            <div class="filters-applied" aria-label="Applied filters">
-                <span class="filters-label">Filters:</span>
-                <div class="filter-badges">
-                    <span class="filter-badge"><span class="badge-key">Sources:</span> Social, Survey</span>
-                    <span class="filter-badge"><span class="badge-key">Sentiment:</span> All</span>
-                    <span class="filter-badge"><span class="badge-key">Countries:</span> All</span>
-                </div>
-            </div>
-            <button class="filter-fab" title="Open filters" aria-label="Open filters" ng-click="openFilters()">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                    <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6L15 12v6a1 1 0 0 1-.553.894l-4 2A1 1 0 0 1 9 20v-8L3.2 6.6A1 1 0 0 1 3 5z" fill="white"/>
-                </svg>
-            </button>
-        </div>
+        <button class="filter-fab" title="Open filters" aria-label="Open filters" ng-click="openFilters()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <path d="M3 5a1 1 0 0 1 1-1h16a1 1 0 0 1 .8 1.6L15 12v6a1 1 0 0 1-.553.894l-4 2A1 1 0 0 1 9 20v-8L3.2 6.6A1 1 0 0 1 3 5z" fill="white"/>
+            </svg>
+        </button>
     </div>
     
     <!-- Tab Navigation -->
@@ -130,6 +110,17 @@
                     </svg>
                 </span>
                 Timeline & Insights
+            </button>
+            <button class="tab" 
+                    ng-class="{'active': activeTab === 'executive'}" 
+                    ng-click="setActiveTab('executive')"
+                    data-color="executive-slate">
+                <span class="tab-icon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3l3 6 6 .9-4.5 4.3 1.1 6.8L12 17.7 6.4 21l1.1-6.8L3 9.9 9 9l3-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                Quick Brief
             </button>
         </div>
     </div>
@@ -423,6 +414,7 @@
                     </div>
                     <div class="chart-container" hc-chart="monthlyGrowthChartConfig"></div>
         </div>
+
         
                 <!-- 8. Complaints per 1,000 Interactions -->
                 <div class="chart-card">
@@ -1699,6 +1691,77 @@
                         </div>
                     </div>
                     <div class="chart-container" hc-chart="firstContactResolutionRateChartConfig"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section: Quick Brief -->
+        <div ng-switch-when="executive" class="dashboard-section">
+            <h2 class="section-title">
+                <span class="section-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 3l3 6 6 .9-4.5 4.3 1.1 6.8L12 17.7 6.4 21l1.1-6.8L3 9.9 9 9l3-6z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                    </svg>
+                </span>
+                Quick Brief
+            </h2>
+            <div class="section-subtitle">Executive snapshot of complaint volume, experience drivers, and resolution health.</div>
+            <div class="executive-grid">
+                <div class="kpi-card insight-card"
+                     ng-repeat="insight in executiveInsightsCards track by insight.id"
+                     ng-style="{'--insight-accent': insight.accentColor, 'border-top-color': insight.accentColor}"
+                     ng-init="$last && refreshLucideIcons()">
+                    <div class="insight-body">
+                        <div class="insight-left">
+                            <div class="insight-title-row">
+                                <div class="insight-heading">
+                                    <div class="insight-title">{{insight.title}}</div>
+                                    <div class="insight-subtitle" ng-if="insight.subtitle">{{insight.subtitle}}</div>
+                                </div>
+                            </div>
+                            <ul class="insight-leaders" ng-if="insight.leaders && insight.leaders.length">
+                                <li class="insight-leader"
+                                    ng-repeat="leader in insight.leaders"
+                                    ng-class="{'leader-primary': $index === 0, 'leader-secondary': $index > 0}">
+                                    <div class="leader-main">
+                                        <span class="leader-rank">{{leader.rank}}</span>
+                                        <div class="leader-text">
+                                            <span class="leader-label"
+                                                  ng-style="$index === 0 ? {'color': insight.accentColor, 'font-weight': '700'} : {}">
+                                                {{leader.label}}
+                                            </span>
+                                            <div class="leader-metrics">
+                                                <span class="leader-value">{{leader.value}}</span>
+                                                <span class="leader-unit" ng-if="leader.unit">{{leader.unit}}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="leader-change"
+                                          ng-if="leader.change"
+                                          ng-class="{'up': leader.direction === 'up', 'down': leader.direction === 'down', 'flat': leader.direction === 'flat'}">
+                                        <svg ng-if="leader.direction === 'up'" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6 14l6-6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <svg ng-if="leader.direction === 'down'" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6 10l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        </svg>
+                                        <svg ng-if="leader.direction === 'flat' || !leader.direction" width="12" height="12" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                        </svg>
+                                        {{leader.change}}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="insight-right">
+                            <div class="insight-icon"
+                                 aria-hidden="true"
+                                 ng-style="{'color': insight.accentColor}">
+                                <i data-lucide="{{insight.icon}}"></i>
+                            </div>
+                            <button class="kpi-info insight-heading-info" title="{{insight.detail || 'Executive insight summary'}}">i</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

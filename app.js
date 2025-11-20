@@ -2,7 +2,7 @@
 var app = angular.module('dashboardApp', []);
 
 // Dashboard Controller
-app.controller('DashboardController', function($scope, $http) {
+app.controller('DashboardController', function($scope, $http, $timeout) {
     // Global Highcharts positioning to avoid overlapping the plot
         if (window.Highcharts && Highcharts.setOptions) {
         Highcharts.setOptions({
@@ -28,8 +28,46 @@ app.controller('DashboardController', function($scope, $http) {
         Support: '#9a5caf',
         Voice: '#bc5090',
         Social: '#ff6361',
+        MobileApp: '#f4e3c1',
         Reviews: '#ffa600'
     };
+    var sourceColorByName = {
+        'Survey': sourceColors.Survey,
+        'Support Form': sourceColors.Support,
+        'Voice Calls': sourceColors.Voice,
+        'Social Channels': sourceColors.Social,
+        'Social Platforms': sourceColors.Social,
+        'Mobile App': sourceColors.MobileApp,
+        'Review Channels': sourceColors.Reviews,
+        'Review Platforms': sourceColors.Reviews
+    };
+    var sourceCategories = ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Mobile App', 'Review Channels'];
+    var sourceColorSequence = sourceCategories.map(function(name) {
+        return sourceColorByName[name];
+    });
+    var sourceTotals = {
+        'Survey': 156,
+        'Support Form': 482,
+        'Voice Calls': 721,
+        'Social Channels': 243,
+        'Mobile App': 210,
+        'Review Channels': 168
+    };
+    function getSourceTotalsData(sortByValueDesc) {
+        var names = sourceCategories.slice();
+        if (sortByValueDesc) {
+            names.sort(function(a, b) {
+                return (sourceTotals[b] || 0) - (sourceTotals[a] || 0);
+            });
+        }
+        return names.map(function(name) {
+            return {
+                name: name,
+                value: sourceTotals[name],
+                color: sourceColorByName[name]
+            };
+        });
+    }
     // Status and Priority colors (vibrant & modern)
     var statusColors = {
         Open: '#28a745',       // green
@@ -72,15 +110,7 @@ app.controller('DashboardController', function($scope, $http) {
     };
     
     $scope.getSourceColor = function(source) {
-        // Map new source names to color keys
-        var sourceMap = {
-            'Support Form': sourceColors.Support,
-            'Voice Calls': sourceColors.Voice,
-            'Social Channels': sourceColors.Social,
-            'Review Channels': sourceColors.Reviews,
-            'Survey': sourceColors.Survey
-        };
-        return sourceMap[source] || sourceColors[source] || '#6B7280';
+        return sourceColorByName[source] || sourceColors[source] || '#6B7280';
     };
     
     $scope.getLocationColor = function(location) {
@@ -116,6 +146,160 @@ app.controller('DashboardController', function($scope, $http) {
         inProgress: { value: 589 },
         resolved: { value: 316 }
     };
+
+    // Executive Insights Cards
+    $scope.executiveInsightsCards = [
+        {
+            id: 'topSources',
+            title: 'Top Complaint Sources',
+            subtitle: 'Volume last 30 days',
+            detail: 'Derived from Source Share distribution.',
+            accentColor: '#ef4444',
+            icon: 'line-chart',
+            meta: 'Source Share • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Voice Calls', value: '721', unit: 'complaints', change: '+18 vs LW', direction: 'up' },
+                { rank: '#2', label: 'Support Form', value: '482', unit: 'complaints', change: '-9 vs LW', direction: 'down' },
+                { rank: '#3', label: 'Social Channels', value: '243', unit: 'complaints', change: '+6 vs LW', direction: 'up' }
+            ]
+        },
+        {
+            id: 'topSocial',
+            title: 'Social & Messaging Volume',
+            subtitle: 'Most active social channels',
+            detail: 'From Social & Messaging Channel Breakdown.',
+            accentColor: '#3b82f6',
+            icon: 'messages-square',
+            meta: 'Social Channels • last 30d',
+            leaders: [
+                { rank: '#1', label: 'WhatsApp', value: '142', unit: 'complaints', change: '+5 vs LW', direction: 'up' },
+                { rank: '#2', label: 'Messenger', value: '118', unit: 'complaints', change: '-3 vs LW', direction: 'down' },
+                { rank: '#3', label: 'Instagram', value: '98', unit: 'complaints', change: '+2 vs LW', direction: 'up' }
+            ]
+        },
+        {
+            id: 'topReviews',
+            title: 'Review Platforms',
+            subtitle: 'Highest complaint contributors',
+            detail: 'Based on Review Channel Breakdown.',
+            accentColor: '#f97316',
+            icon: 'star',
+            meta: 'Review Platforms • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Google', value: '168', unit: 'complaints', change: '+4 vs LW', direction: 'up' },
+                { rank: '#2', label: 'Facebook', value: '125', unit: 'complaints', change: '+2 vs LW', direction: 'up' },
+                { rank: '#3', label: 'TripAdvisor', value: '62', unit: 'complaints', change: 'flat', direction: 'flat' }
+            ]
+        },
+        {
+            id: 'topCategories',
+            title: 'Categories w/ Most Complaints',
+            subtitle: 'Overall ticket load',
+            detail: 'From Category Share chart.',
+            accentColor: '#a855f7',
+            icon: 'layout-grid',
+            meta: 'Category Share • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Quality', value: '342', unit: 'complaints', change: '+8 vs LW', direction: 'up' },
+                { rank: '#2', label: 'Billing', value: '289', unit: 'complaints', change: '-5 vs LW', direction: 'down' },
+                { rank: '#3', label: 'Service', value: '245', unit: 'complaints', change: '+3 vs LW', direction: 'up' }
+            ]
+        },
+        {
+            id: 'topLocations',
+            title: 'Locations w/ Most Complaints',
+            subtitle: 'Regional hotspots',
+            detail: 'From Location Breakdown data.',
+            accentColor: '#10b981',
+            icon: 'map-pin',
+            meta: 'Location Breakdown • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Colombo', value: '342', unit: 'complaints', change: '+6 vs LW', direction: 'up' },
+                { rank: '#2', label: 'Gampaha', value: '289', unit: 'complaints', change: '+4 vs LW', direction: 'up' },
+                { rank: '#3', label: 'Kandy', value: '245', unit: 'complaints', change: '-2 vs LW', direction: 'down' }
+            ]
+        },
+        {
+            id: 'slaBreaches',
+            title: 'Locations w/ SLA Breach',
+            subtitle: 'Highest breach rate',
+            detail: 'From SLA Breach Rate by Location.',
+            accentColor: '#e11d48',
+            icon: 'shield-alert',
+            meta: 'SLA Breach % • rolling 30d',
+            leaders: [
+                { rank: '#1', label: 'Galle', value: '22.1%', unit: 'breach rate', change: '+1.4 pts', direction: 'up' },
+                { rank: '#2', label: 'Gampaha', value: '18.6%', unit: 'breach rate', change: '-0.6 pts', direction: 'down' },
+                { rank: '#3', label: 'Kurunegala', value: '15.3%', unit: 'breach rate', change: '+0.1 pts', direction: 'up' }
+            ]
+        },
+        {
+            id: 'fastestSources',
+            title: 'Fastest Resolving Sources',
+            subtitle: 'Average resolution hours',
+            detail: 'From Avg Resolution Time per Source.',
+            accentColor: '#0ea5e9',
+            icon: 'zap',
+            meta: 'Source Resolution Time • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Review Channels', value: '10h', unit: 'avg time', change: '-1.2h', direction: 'down' },
+                { rank: '#2', label: 'Survey', value: '12h', unit: 'avg time', change: '-0.5h', direction: 'down' },
+                { rank: '#3', label: 'Social Channels', value: '15h', unit: 'avg time', change: '+0.3h', direction: 'up' }
+            ]
+        },
+        {
+            id: 'fastestCategories',
+            title: 'Fastest Resolving Categories',
+            subtitle: 'Average resolution hours',
+            detail: 'Based on Category vs Resolution Time.',
+            accentColor: '#22c55e',
+            icon: 'gauge',
+            meta: 'Category Resolution Time • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Shipping', value: '14h', unit: 'avg time', change: '-0.8h', direction: 'down' },
+                { rank: '#2', label: 'Service', value: '16h', unit: 'avg time', change: '-0.4h', direction: 'down' },
+                { rank: '#3', label: 'Billing', value: '18h', unit: 'avg time', change: '+0.2h', direction: 'up' }
+            ]
+        },
+        {
+            id: 'fastestLocations',
+            title: 'Fastest Resolving Locations',
+            subtitle: 'Resolution rate (higher is better)',
+            detail: 'From Location Resolution Rate chart.',
+            accentColor: '#6366f1',
+            icon: 'trending-up',
+            meta: 'Resolution Rate • last 30d',
+            leaders: [
+                { rank: '#1', label: 'Kandy', value: '88.1%', unit: 'resolution rate', change: '+1.1 pts', direction: 'up' },
+                { rank: '#2', label: 'Badulla', value: '87.2%', unit: 'resolution rate', change: '+0.5 pts', direction: 'up' },
+                { rank: '#3', label: 'Kurunegala', value: '86.3%', unit: 'resolution rate', change: '-0.2 pts', direction: 'down' }
+            ]
+        }
+    ];
+    
+    function refreshLucideIcons() {
+        $timeout(function() {
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons({
+                    attrs: {
+                        'stroke-width': 1.8,
+                        'width': 96,
+                        'height': 96
+                    }
+                });
+            }
+        }, 0);
+    }
+    
+    $scope.refreshLucideIcons = refreshLucideIcons;
+    
+    $scope.$watch('activeTab', function(tab) {
+        if (tab === 'executive') {
+            refreshLucideIcons();
+        }
+    });
+    
+    refreshLucideIcons();
     
     // Menu states
     $scope.headerMenuOpen = false;
@@ -179,6 +363,22 @@ app.controller('DashboardController', function($scope, $http) {
         date.setMonth(date.getMonth() - i);
         monthlyDates.push(date.toLocaleDateString('en-US', { month: 'short', year: 'numeric' }));
     }
+    var sourceVolumeSeriesData = {
+        'Survey': [12, 15, 18, 14, 20, 16, 22, 19, 24, 21, 18, 20, 23, 25],
+        'Support Form': [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43],
+        'Voice Calls': [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62],
+        'Social Channels': [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28],
+        'Mobile App': [18, 20, 19, 22, 24, 21, 25, 23, 27, 24, 22, 23, 25, 26],
+        'Review Channels': [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19]
+    };
+    function getSourceVolumeSeries() {
+        return sourceCategories.map(function(name) {
+            return {
+                name: name,
+                data: (sourceVolumeSeriesData[name] || []).slice()
+            };
+        });
+    }
     
     // Helper function to add data labels on top of bars
     function getBarChartPlotOptions() {
@@ -224,14 +424,8 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: false }
             }
         },
-            colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
-        series: [
-            { name: 'Survey', data: [12, 15, 18, 14, 20, 16, 22, 19, 24, 21, 18, 20, 23, 25] },
-            { name: 'Support Form', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
-            { name: 'Voice Calls', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
-            { name: 'Social Channels', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
-            { name: 'Review Channels', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
-        ],
+        colors: sourceColorSequence,
+        series: getSourceVolumeSeries(),
         credits: { enabled: false },
         legend: { enabled: true }
     };
@@ -243,6 +437,7 @@ app.controller('DashboardController', function($scope, $http) {
             credits: { enabled: false },
             legend: { enabled: true }
         };
+        var orderedTotals = getSourceTotalsData(false);
         
         if (type === 'bar') {
             baseConfig.chart = { type: 'column', backgroundColor: '#fff' };
@@ -266,13 +461,9 @@ app.controller('DashboardController', function($scope, $http) {
                     }
                 }
             };
-            baseConfig.series = [
-                { name: 'Survey', data: [156], color: sourceColors.Survey },
-                { name: 'Support Form', data: [482], color: sourceColors.Support },
-                { name: 'Voice Calls', data: [721], color: sourceColors.Voice },
-                { name: 'Social Channels', data: [243], color: sourceColors.Social },
-                { name: 'Review Channels', data: [168], color: sourceColors.Reviews }
-            ];
+            baseConfig.series = orderedTotals.map(function(item) {
+                return { name: item.name, data: [item.value], color: item.color };
+            });
         } else {
             baseConfig.chart = { type: 'pie', backgroundColor: '#fff' };
             baseConfig.plotOptions = {
@@ -287,13 +478,9 @@ app.controller('DashboardController', function($scope, $http) {
             baseConfig.series = [{
                 name: 'Complaints',
                 colorByPoint: false,
-                data: [
-                    { name: 'Survey', y: 156, color: sourceColors.Survey },
-                    { name: 'Support Form', y: 482, color: sourceColors.Support },
-                    { name: 'Voice Calls', y: 721, color: sourceColors.Voice },
-                    { name: 'Social Channels', y: 243, color: sourceColors.Social },
-                    { name: 'Review Channels', y: 168, color: sourceColors.Reviews }
-                ]
+                data: orderedTotals.map(function(item) {
+                    return { name: item.name, y: item.value, color: item.color };
+                })
             }];
         }
         return baseConfig;
@@ -513,6 +700,7 @@ app.controller('DashboardController', function($scope, $http) {
             { name: 'Support Form', y: 4.8, color: sourceColors.Support },
             { name: 'Voice Calls', y: 6.1, color: sourceColors.Voice },
             { name: 'Social Platforms', y: 3.2, color: sourceColors.Social },
+            { name: 'Mobile App', y: 3.0, color: sourceColors.MobileApp },
             { name: 'Review Platforms', y: 1.7, color: sourceColors.Reviews }
         ];
         if (type === 'donut') {
@@ -565,7 +753,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourceStatusChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             column: {
@@ -584,9 +772,9 @@ app.controller('DashboardController', function($scope, $http) {
         },
         colors: [statusColors.Open, statusColors.InProgress, statusColors.Resolved],
         series: [
-            { name: 'Open', data: [45, 125, 180, 68, 52] },
-            { name: 'In Progress', data: [78, 245, 398, 142, 95] },
-            { name: 'Resolved', data: [33, 112, 143, 33, 21] }
+            { name: 'Open', data: [45, 125, 180, 68, 42, 52] },
+            { name: 'In Progress', data: [78, 245, 398, 142, 118, 95] },
+            { name: 'Resolved', data: [33, 112, 143, 33, 50, 21] }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -596,7 +784,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourcePriorityChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Count' } },
         plotOptions: {
             column: {
@@ -612,9 +800,9 @@ app.controller('DashboardController', function($scope, $http) {
         },
         colors: [priorityColors.High, priorityColors.Medium, priorityColors.Low],
         series: [
-            { name: 'High', data: [45, 142, 218, 78, 52] },
-            { name: 'Medium', data: [78, 245, 356, 112, 78] },
-            { name: 'Low', data: [33, 95, 147, 53, 38] }
+            { name: 'High', data: [45, 142, 218, 78, 70, 52] },
+            { name: 'Medium', data: [78, 245, 356, 112, 92, 78] },
+            { name: 'Low', data: [33, 95, 147, 53, 48, 38] }
         ],
         credits: { enabled: false },
         legend: { enabled: true }
@@ -624,7 +812,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.sourceResTimeChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: [{ 
             title: { text: 'Hours' },
             labels: { format: '{value}h' }
@@ -652,14 +840,14 @@ app.controller('DashboardController', function($scope, $http) {
             {
                 name: 'Avg Resolution Time',
                 type: 'column',
-                data: [12, 18, 24, 15, 10],
+                data: [12, 18, 24, 15, 17, 10],
                 color: '#007abf'
             },
             {
                 name: 'Target',
                 type: 'line',
                 yAxis: 0,
-                data: [16, 16, 16, 16, 16],
+                data: [16, 16, 16, 16, 16, 16],
                 color: '#ff0000',
                 marker: { enabled: true }
             }
@@ -679,14 +867,8 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: true, radius: 3 }
             }
         },
-        colors: ['#FFB6C1', '#87CEEB', '#98D8C8', '#F7DC6F', '#BB8FCE'],
-        series: [
-            { name: 'Survey', data: [12, 15, 18, 14, 20, 16, 22, 19, 24, 21, 18, 20, 23, 25] },
-            { name: 'Support Form', data: [28, 32, 30, 35, 38, 33, 40, 36, 42, 38, 35, 37, 40, 43] },
-            { name: 'Voice Calls', data: [45, 50, 48, 52, 55, 50, 58, 54, 60, 56, 53, 55, 58, 62] },
-            { name: 'Social Channels', data: [15, 18, 16, 20, 22, 19, 25, 22, 28, 24, 20, 22, 25, 28] },
-            { name: 'Review Channels', data: [10, 12, 11, 14, 15, 13, 17, 15, 19, 16, 14, 15, 17, 19] }
-        ],
+        colors: sourceColorSequence,
+        series: getSourceVolumeSeries(),
         credits: { enabled: false },
         legend: { enabled: true }
     };
@@ -694,18 +876,14 @@ app.controller('DashboardController', function($scope, $http) {
     // Source Share (pie/bar toggle)
     $scope.sourceShareType = 'pie';
     function getSourceShareConfig(type) {
-        var data = [
-            { name: 'Voice Calls', y: 721, color: sourceColors.Voice },
-            { name: 'Support Form', y: 482, color: sourceColors.Support },
-            { name: 'Social Channels', y: 243, color: sourceColors.Social },
-            { name: 'Review Channels', y: 168, color: sourceColors.Reviews },
-            { name: 'Survey', y: 156, color: sourceColors.Survey }
-        ];
+        var shareData = getSourceTotalsData(true).map(function(item) {
+            return { name: item.name, y: item.value, color: item.color };
+        });
         if (type === 'bar') {
             return {
                 chart: { type: 'column', backgroundColor: '#fff' },
                 title: { text: null },
-                xAxis: { categories: data.map(function(d){return d.name;}) },
+                xAxis: { categories: shareData.map(function(d){return d.name;}) },
                 yAxis: { title: { text: 'Complaints' } },
                 plotOptions: { 
                     column: { 
@@ -722,7 +900,7 @@ app.controller('DashboardController', function($scope, $http) {
                         } 
                     } 
                 },
-                series: [{ name: 'Complaints', data: data.map(function(d){return { y: d.y, color: d.color }; }) }],
+                series: [{ name: 'Complaints', data: shareData.map(function(d){return { y: d.y, color: d.color }; }) }],
                 credits: { enabled: false }
             };
         }
@@ -730,7 +908,7 @@ app.controller('DashboardController', function($scope, $http) {
         chart: { type: 'pie', backgroundColor: '#fff' },
         title: { text: null },
             plotOptions: { pie: { innerSize: '60%', showInLegend: true, dataLabels: { enabled: true, format: '<b>{point.name}</b><br>{point.percentage:.1f}% ({point.y})' } } },
-            series: [{ name: 'Source Share', colorByPoint: false, data: data }],
+            series: [{ name: 'Source Share', colorByPoint: false, data: shareData }],
             credits: { enabled: false }
         };
     }
@@ -1556,6 +1734,7 @@ app.controller('DashboardController', function($scope, $http) {
             { name: 'Support Form', data: [98, 82, 68, 55, 44], color: sourceColors.Support },
             { name: 'Voice Calls', data: [142, 118, 98, 78, 62], color: sourceColors.Voice },
             { name: 'Social Channels', data: [38, 32, 28, 22, 18], color: sourceColors.Social },
+            { name: 'Mobile App', data: [55, 46, 42, 37, 30], color: sourceColors.MobileApp },
             { name: 'Review Channels', data: [19, 16, 19, 15, 10], color: sourceColors.Reviews }
         ],
         credits: { enabled: false },
@@ -1575,7 +1754,7 @@ app.controller('DashboardController', function($scope, $http) {
             categories: ['Colombo', 'Gampaha', 'Kandy', 'Galle', 'Kurunegala']
         },
         yAxis: {
-            categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'],
+            categories: sourceCategories.slice(),
             title: null
         },
         plotOptions: {
@@ -1597,11 +1776,11 @@ app.controller('DashboardController', function($scope, $http) {
         series: [{
             name: 'Complaints',
             data: [
-                [0, 0, 45], [0, 1, 98], [0, 2, 142], [0, 3, 38], [0, 4, 19],
-                [1, 0, 38], [1, 1, 82], [1, 2, 118], [1, 3, 32], [1, 4, 16],
-                [2, 0, 32], [2, 1, 68], [2, 2, 98], [2, 3, 28], [2, 4, 19],
-                [3, 0, 28], [3, 1, 55], [3, 2, 78], [3, 3, 22], [3, 4, 15],
-                [4, 0, 22], [4, 1, 44], [4, 2, 62], [4, 3, 18], [4, 4, 10]
+                [0, 0, 45], [0, 1, 98], [0, 2, 142], [0, 3, 38], [0, 4, 55], [0, 5, 19],
+                [1, 0, 38], [1, 1, 82], [1, 2, 118], [1, 3, 32], [1, 4, 46], [1, 5, 16],
+                [2, 0, 32], [2, 1, 68], [2, 2, 98], [2, 3, 28], [2, 4, 42], [2, 5, 19],
+                [3, 0, 28], [3, 1, 55], [3, 2, 78], [3, 3, 22], [3, 4, 37], [3, 5, 15],
+                [4, 0, 22], [4, 1, 44], [4, 2, 62], [4, 3, 18], [4, 4, 30], [4, 5, 10]
             ]
         }],
         credits: { enabled: false }
@@ -1876,6 +2055,7 @@ app.controller('DashboardController', function($scope, $http) {
             { name: 'Support Form', y: 18, color: sourceColors.Support },
             { name: 'Voice Calls', y: 24, color: sourceColors.Voice },
             { name: 'Social Channels', y: 15, color: sourceColors.Social },
+            { name: 'Mobile App', y: 17, color: sourceColors.MobileApp },
             { name: 'Review Channels', y: 10, color: sourceColors.Reviews }
         ];
         if (type === 'donut') {
@@ -1890,7 +2070,7 @@ app.controller('DashboardController', function($scope, $http) {
         return {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Hours' } },
         plotOptions: {
             column: {
@@ -1911,6 +2091,7 @@ app.controller('DashboardController', function($scope, $http) {
                 { y: 18, color: sourceColors.Support },
                 { y: 24, color: sourceColors.Voice },
                 { y: 15, color: sourceColors.Social },
+                { y: 17, color: sourceColors.MobileApp },
                 { y: 10, color: sourceColors.Reviews }
             ]
         }],
@@ -1925,8 +2106,9 @@ app.controller('DashboardController', function($scope, $http) {
     };
 
     // Resolution Rate by Source (Column, %)
-    // Source totals: Survey: 156, Support Form: 482, Voice Calls: 721, Social Channels: 243, Review Channels: 168
-    var resolutionCountsByChannel = [122, 347, 490, 182, 138]; // Estimated resolved counts
+    // Source totals: Survey: 156, Support Form: 482, Voice Calls: 721, Social Channels: 243, Mobile App: 210, Review Channels: 168
+    var sourceTotalsByChannel = sourceCategories.map(function(name) { return sourceTotals[name]; });
+    var resolutionCountsByChannel = [122, 347, 490, 182, 160, 138]; // Estimated resolved counts
     $scope.resolutionRateByChannelChartConfig = {
         chart: { 
             type: 'column', 
@@ -1934,7 +2116,7 @@ app.controller('DashboardController', function($scope, $http) {
             spacingBottom: 60
         },
         title: { text: null },
-        xAxis: { categories: ['Survey', 'Support Form', 'Voice Calls', 'Social Channels', 'Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Resolution Rate (%)' }, max: 100, labels: { format: '{value}%' } },
         plotOptions: {
             column: {
@@ -1942,7 +2124,8 @@ app.controller('DashboardController', function($scope, $http) {
                     enabled: true, 
                     formatter: function(){ 
                         var idx = this.x;
-                        var count = resolutionCountsByChannel[idx] || Math.round(this.y * (idx === 0 ? 156 : idx === 1 ? 482 : idx === 2 ? 721 : idx === 3 ? 243 : 168) / 100);
+                        var total = sourceTotalsByChannel[idx] || 0;
+                        var count = resolutionCountsByChannel[idx] || Math.round(this.y * total / 100);
                         return this.y + '% (' + count + ')'; 
                     }, 
                     style: { fontWeight: 'bold', fontSize: '11px' } 
@@ -1951,7 +2134,7 @@ app.controller('DashboardController', function($scope, $http) {
         },
         series: [{ 
             name: 'Resolution Rate', 
-            data: [78, 72, 68, 75, 82],
+            data: [78, 72, 68, 75, 76, 82],
             zoneAxis: 'y',
             zones: [
                 { value: 60, color: '#dc3545' },   // <60% red
@@ -2490,11 +2673,20 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.timeToFirstResponseChartConfig = {
         chart: { type: 'column', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey','Support Form','Voice Calls','Social Channels','Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Hours' } },
         plotOptions: getBarChartPlotOptions(),
-        colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
-        series: [{ name: 'TTFR', data: [1.2, 2.4, 3.1, 2.0, 1.0] }],
+        series: [{
+            name: 'TTFR',
+            data: [
+                { y: 1.2, color: sourceColors.Survey },
+                { y: 2.4, color: sourceColors.Support },
+                { y: 3.1, color: sourceColors.Voice },
+                { y: 2.0, color: sourceColors.Social },
+                { y: 1.6, color: sourceColors.MobileApp },
+                { y: 1.0, color: sourceColors.Reviews }
+            ]
+        }],
         credits: { enabled: false }
     };
 
@@ -2502,7 +2694,7 @@ app.controller('DashboardController', function($scope, $http) {
     $scope.resolutionTimeDistributionChartConfig = {
         chart: { type: 'boxplot', backgroundColor: '#fff' },
         title: { text: null },
-        xAxis: { categories: ['Survey','Support Form','Voice Calls','Social Channels','Review Channels'] },
+        xAxis: { categories: sourceCategories.slice() },
         yAxis: { title: { text: 'Hours' } },
         series: [{
             name: 'Resolution Time',
@@ -2511,6 +2703,7 @@ app.controller('DashboardController', function($scope, $http) {
                 [4, 8, 12, 16, 24], // Support
                 [6, 10, 18, 24, 36],// Voice
                 [4, 7, 10, 14, 20], // Social
+                [3, 6, 9, 13, 20],  // Mobile App
                 [1, 3, 5, 7, 10]    // Reviews
             ]
         }],
@@ -2918,6 +3111,7 @@ app.controller('DashboardController', function($scope, $http) {
         support: [18, 17.8, 17.5, 17.2, 17, 16.8, 16.5, 16.2, 16, 15.8, 15.5, 15.2, 15, 14.8],
         voice: [24, 23.5, 23, 22.5, 22, 21.5, 21, 20.5, 20, 19.5, 19, 18.5, 18, 17.5],
         social: [15, 14.8, 14.5, 14.2, 14, 13.8, 13.5, 13.2, 13, 12.8, 12.5, 12.2, 12, 11.8],
+        mobileApp: [17, 16.8, 16.5, 16.2, 16, 15.8, 15.5, 15.2, 15, 14.8, 14.5, 14.2, 14, 13.8],
         review: [10, 9.8, 9.5, 9.2, 9, 8.8, 8.5, 8.2, 8, 7.8, 7.5, 7.2, 7, 6.8]
     };
     var lifecycleMonthlyData = {
@@ -2925,6 +3119,7 @@ app.controller('DashboardController', function($scope, $http) {
         support: [18, 17, 16.5, 16, 15.5, 15, 14.5, 14, 13.5, 13, 12.5, 12],
         voice: [24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14, 13],
         social: [15, 14.5, 14, 13.5, 13, 12.5, 12, 11.5, 11, 10.5, 10, 9.5],
+        mobileApp: [17, 16.5, 16, 15.5, 15, 14.5, 14, 13.5, 13, 12.5, 12, 11.5],
         review: [10, 9.5, 9, 8.5, 8, 7.5, 7, 6.5, 6, 5.5, 5, 4.5]
     };
     function getLifecycleDurationTrendConfig(type) {
@@ -2940,12 +3135,13 @@ app.controller('DashboardController', function($scope, $http) {
                 marker: { enabled: true, radius: 3 }
             }
         },
-        colors: [sourceColors.Survey, sourceColors.Support, sourceColors.Voice, sourceColors.Social, sourceColors.Reviews],
+        colors: sourceColorSequence,
         series: [
                 { name: 'Survey', data: data.survey },
                 { name: 'Support Form', data: data.support },
                 { name: 'Voice Calls', data: data.voice },
                 { name: 'Social Channels', data: data.social },
+                { name: 'Mobile App', data: data.mobileApp },
                 { name: 'Review Channels', data: data.review }
         ],
         credits: { enabled: false },
